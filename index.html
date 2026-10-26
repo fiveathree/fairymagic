@@ -56,7 +56,22 @@ header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;min-width:0}
 .hbtn:hover{color:var(--paper)}
 
 /* main panels */
-main{display:grid;grid-template-columns:minmax(250px,300px) minmax(300px,1fr) minmax(330px,1.15fr);gap:10px;min-height:0}
+main{display:grid;grid-template-columns:minmax(250px,300px) minmax(0,1fr);grid-template-rows:minmax(0,1.15fr) minmax(0,1fr);grid-template-areas:"el tower" "el forge";gap:10px;min-height:0}
+#pEl{grid-area:el}#pTower{grid-area:tower}#pForge{grid-area:forge}
+.pb.tw{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);grid-template-rows:minmax(0,1fr);gap:10px;overflow:hidden}
+.pb.tw .tside{min-height:0}
+.pb.tw .log{flex:1;min-height:44px;max-height:none}
+.pb.tw .tside{gap:6px}
+.pb.tw .me{gap:3px;padding:6px 10px}
+.st:empty{display:none}
+.pb.tw .act{padding:4px 8px}
+.pb.tw .subacts .btn{padding:4px}
+.pb.tw>.arena{min-height:0;overflow:hidden}
+.tside{display:flex;flex-direction:column;gap:8px;min-width:0}
+.pb.fg{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,.95fr);grid-template-rows:auto 1fr;grid-template-areas:"a p l" "b p l";gap:10px 12px;align-items:start}
+.pb.fg>.fl-col{display:contents}
+.fl-col>:nth-child(1){grid-area:a}.fl-col>:nth-child(2){grid-area:b}.fl-col>:nth-child(3){grid-area:p}.pb.fg>:nth-child(2){grid-area:l}
+.fl-col{display:flex;flex-direction:column;gap:10px;min-width:0}
 .panel{background:var(--slab);border:1px solid var(--line);border-radius:10px;display:flex;flex-direction:column;min-height:0;min-width:0;overflow:hidden}
 .ph{display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding:9px 12px 7px;border-bottom:1px solid var(--line)}
 .ph h2{margin:0;font-family:var(--f-disp);font-size:17px;letter-spacing:.15em}
@@ -122,7 +137,8 @@ main{display:grid;grid-template-columns:minmax(250px,300px) minmax(300px,1fr) mi
 .etop{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .ename{font-family:var(--f-disp);font-size:19px;font-weight:700}
 .ename.boss{color:var(--seal)}
-.foe{display:flex;align-items:center;justify-content:center;height:96px}
+.foe{display:flex;align-items:center;justify-content:center;flex:1;min-height:0}
+.foe .glyph{font-size:clamp(36px,9vh,68px)!important}
 .foe .glyph{font-family:var(--f-disp);font-size:68px;font-weight:700;color:var(--ec);text-shadow:0 0 24px var(--ec);transition:transform .12s}
 .foe .glyph.hit{animation:hit .35s}
 @keyframes hit{0%{transform:translateX(0)}25%{transform:translateX(-7px) scale(.94)}55%{transform:translateX(6px)}100%{transform:none}}
@@ -148,7 +164,7 @@ main{display:grid;grid-template-columns:minmax(250px,300px) minmax(300px,1fr) mi
 .act.ghost{border-style:dashed;color:var(--dim)}
 .subacts{display:flex;gap:6px}
 .subacts .btn{flex:1;font-size:13px;padding:6px}
-.log{font-size:12.5px;line-height:1.55;color:#c8cede;display:flex;flex-direction:column-reverse;gap:1px;min-height:60px}
+.log{font-size:12.5px;line-height:1.5;color:#c8cede;display:flex;flex-direction:column-reverse;gap:1px;min-height:40px;max-height:96px;overflow:auto}
 .log p{margin:0}
 .log p:first-child{color:var(--paper)}
 .res{display:flex;gap:6px}
@@ -170,7 +186,17 @@ main{display:grid;grid-template-columns:minmax(250px,300px) minmax(300px,1fr) mi
 .tabs{display:none}
 @media(max-width:899px){
   .app{grid-template-rows:auto 1fr auto}
-  main{grid-template-columns:1fr}
+  main{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr);grid-template-areas:none}
+  main>#pEl,main>#pTower,main>#pForge{grid-area:auto}
+  header{gap:8px;flex-wrap:nowrap}
+  .logo small,.who .best,.expbar{display:none}
+  .who{gap:5px;flex-wrap:nowrap;overflow:hidden}
+  .pill{font-size:12px;padding:2px 8px}
+  .who .pill:first-child{overflow:hidden;text-overflow:ellipsis;min-width:0}
+  .pb.tw,.pb.fg{display:flex;flex-direction:column;overflow:auto}
+  .pb.fg>.fl-col{display:flex}
+  .foe{min-height:80px}
+  .log{max-height:none}
   main>.panel{display:none}
   main>.panel.show{display:flex}
   .tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -208,22 +234,9 @@ main{display:grid;grid-template-columns:minmax(250px,300px) minmax(300px,1fr) mi
       </div>
     </section>
 
-    <section class="panel" id="pForge">
-      <div class="ph"><h2>創招爐</h2><span id="maxElLbl"></span></div>
-      <div class="pb">
-        <div><div class="lbl">一 · 選屬性</div><div class="chips" id="fchips" style="margin-top:5px"></div></div>
-        <div><div class="lbl">二 · 選招式形態</div><div class="forms" id="fforms" style="margin-top:5px"></div></div>
-        <div class="preview" id="preview"></div>
-        <div>
-          <div class="ph" style="padding:0 0 4px;border:0"><span class="lbl">武學庫 · ★ 裝備（最多 4 招）</span><span id="libCount"></span></div>
-          <div class="lib" id="lib"></div>
-        </div>
-      </div>
-    </section>
-
     <section class="panel" id="pTower">
       <div class="ph"><h2>試煉塔</h2><span id="floorLbl"></span></div>
-      <div class="pb">
+      <div class="pb tw">
         <div class="arena" id="arena">
           <div class="etop"><div class="ename" id="eName"></div><div class="chip" id="eEl"></div></div>
           <div class="foe"><div class="glyph" id="eGlyph"></div></div>
@@ -233,6 +246,7 @@ main{display:grid;grid-template-columns:minmax(250px,300px) minmax(300px,1fr) mi
           <div class="intent" id="eIntent"></div>
           <div class="floats" id="floats"></div>
         </div>
+        <div class="tside">
         <div class="me">
           <div class="bar hp"><i id="pHp"></i></div>
           <div class="bar sh"><i id="pSh"></i></div>
@@ -244,8 +258,24 @@ main{display:grid;grid-template-columns:minmax(250px,300px) minmax(300px,1fr) mi
         <div class="acts" id="acts"></div>
         <div class="subacts" id="subacts"></div>
         <div class="log" id="log"></div>
+        </div>
       </div>
     </section>
+    <section class="panel" id="pForge">
+      <div class="ph"><h2>創招爐</h2><span id="maxElLbl"></span></div>
+      <div class="pb fg">
+        <div class="fl-col">
+        <div><div class="lbl">一 · 選屬性</div><div class="chips" id="fchips" style="margin-top:5px"></div></div>
+        <div><div class="lbl">二 · 選招式形態</div><div class="forms" id="fforms" style="margin-top:5px"></div></div>
+        <div class="preview" id="preview"></div>
+        </div>
+        <div>
+          <div class="ph" style="padding:0 0 4px;border:0"><span class="lbl">武學庫 · ★ 裝備（最多 4 招）</span><span id="libCount"></span></div>
+          <div class="lib" id="lib"></div>
+        </div>
+      </div>
+    </section>
+
   </main>
   <nav class="tabs" id="tabs">
     <button data-t="pEl">屬性</button><button data-t="pForge">創招</button><button data-t="pTower" class="on">試煉</button>
@@ -511,7 +541,7 @@ function render(){
   $('who').innerHTML=`<span class="pill ${S.school==='arc'?'arc':''}"><b>${esc(S.name)}</b> · ${sch.n}</span>
    <span class="pill">${REALM[S.school][realm()]} · Lv ${S.level}</span>
    <span class="expbar" title="修為 ${S.exp}/${needExp()}"><i style="width:${S.exp/needExp()*100}%"></i></span>
-   <span class="pill">悟性 <b>${S.wx}</b></span><span class="pill">最高第 <b>${S.best}</b> 層</span>`;
+   <span class="pill">悟性 <b>${S.wx}</b></span><span class="pill best">最高第 <b>${S.best}</b> 層</span>`;
   // elements
   $('wxLbl').textContent=`已修 ${S.owned.length}/${ORDER.length}`;
   $('egrid').innerHTML=ORDER.map(k=>{const E=EL[k],own=S.owned.includes(k);
