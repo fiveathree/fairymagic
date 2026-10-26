@@ -56,21 +56,22 @@ header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;min-width:0}
 .hbtn:hover{color:var(--paper)}
 
 /* main panels */
-main{display:grid;grid-template-columns:minmax(250px,300px) minmax(0,1fr);grid-template-rows:minmax(0,1.15fr) minmax(0,1fr);grid-template-areas:"el tower" "el forge";gap:10px;min-height:0}
+main{display:grid;grid-template-columns:minmax(236px,272px) minmax(0,1fr) minmax(300px,360px);grid-template-areas:"el tower forge";gap:10px;min-height:0}
 #pEl{grid-area:el}#pTower{grid-area:tower}#pForge{grid-area:forge}
-.pb.tw{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);grid-template-rows:minmax(0,1fr);gap:10px;overflow:hidden}
-.pb.tw .tside{min-height:0}
-.pb.tw .log{flex:1;min-height:44px;max-height:none}
+#pTower{border-color:color-mix(in srgb,var(--gold) 45%,var(--line));box-shadow:0 0 40px -18px var(--gold)}
+#pTower .ph h2{color:var(--gold)}
+.pb.tw{display:flex;flex-direction:column;gap:8px;overflow:hidden}
+.pb.tw>.arena{flex:1 1 auto;min-height:170px;overflow:hidden}
+.tside{display:flex;flex-direction:column;gap:8px;min-width:0;flex:none}
+.pb.fg{display:flex;flex-direction:column;gap:10px}
+.fl-col{display:flex;flex-direction:column;gap:10px;min-width:0}
+.pb.tw .log{height:84px;min-height:0;max-height:none;overflow:auto}
 .pb.tw .tside{gap:6px}
 .pb.tw .me{gap:3px;padding:6px 10px}
 .st:empty{display:none}
 .pb.tw .act{padding:4px 8px}
 .pb.tw .subacts .btn{padding:4px}
-.pb.tw>.arena{min-height:0;overflow:hidden}
 .tside{display:flex;flex-direction:column;gap:8px;min-width:0}
-.pb.fg{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,.95fr);grid-template-rows:auto 1fr;grid-template-areas:"a p l" "b p l";gap:10px 12px;align-items:start}
-.pb.fg>.fl-col{display:contents}
-.fl-col>:nth-child(1){grid-area:a}.fl-col>:nth-child(2){grid-area:b}.fl-col>:nth-child(3){grid-area:p}.pb.fg>:nth-child(2){grid-area:l}
 .fl-col{display:flex;flex-direction:column;gap:10px;min-width:0}
 .panel{background:var(--slab);border:1px solid var(--line);border-radius:10px;display:flex;flex-direction:column;min-height:0;min-width:0;overflow:hidden}
 .ph{display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding:9px 12px 7px;border-bottom:1px solid var(--line)}
@@ -80,7 +81,7 @@ main{display:grid;grid-template-columns:minmax(250px,300px) minmax(0,1fr);grid-t
 .lbl{font-size:11px;color:var(--dim);letter-spacing:.12em}
 
 /* elements */
-.egrid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.egrid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
 .el{position:relative;aspect-ratio:1;max-width:100%;border-radius:8px;border:1px solid var(--line);background:var(--slab2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;transition:transform .15s,border-color .15s}
 .el .g{font-family:var(--f-disp);font-size:20px;font-weight:700;line-height:1}
 .el .s{font-size:9.5px;color:var(--dim)}
@@ -138,7 +139,7 @@ main{display:grid;grid-template-columns:minmax(250px,300px) minmax(0,1fr);grid-t
 .ename{font-family:var(--f-disp);font-size:19px;font-weight:700}
 .ename.boss{color:var(--seal)}
 .foe{display:flex;align-items:center;justify-content:center;flex:1;min-height:0}
-.foe .glyph{font-size:clamp(36px,9vh,68px)!important}
+.foe .glyph{font-size:clamp(40px,13vh,110px)!important}
 .foe .glyph{font-family:var(--f-disp);font-size:68px;font-weight:700;color:var(--ec);text-shadow:0 0 24px var(--ec);transition:transform .12s}
 .foe .glyph.hit{animation:hit .35s}
 @keyframes hit{0%{transform:translateX(0)}25%{transform:translateX(-7px) scale(.94)}55%{transform:translateX(6px)}100%{transform:none}}
@@ -188,13 +189,13 @@ main{display:grid;grid-template-columns:minmax(250px,300px) minmax(0,1fr);grid-t
   .app{grid-template-rows:auto 1fr auto}
   main{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr);grid-template-areas:none}
   main>#pEl,main>#pTower,main>#pForge{grid-area:auto}
+  .pb.tw .log{height:auto;max-height:none}
   header{gap:8px;flex-wrap:nowrap}
   .logo small,.who .best,.expbar{display:none}
   .who{gap:5px;flex-wrap:nowrap;overflow:hidden}
   .pill{font-size:12px;padding:2px 8px}
   .who .pill:first-child{overflow:hidden;text-overflow:ellipsis;min-width:0}
   .pb.tw,.pb.fg{display:flex;flex-direction:column;overflow:auto}
-  .pb.fg>.fl-col{display:flex}
   .foe{min-height:80px}
   .log{max-height:none}
   main>.panel{display:none}
