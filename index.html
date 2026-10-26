@@ -56,8 +56,20 @@ header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;min-width:0}
 .hbtn:hover{color:var(--paper)}
 
 /* main panels */
-main{display:grid;grid-template-columns:minmax(236px,272px) minmax(0,1fr) minmax(300px,360px);grid-template-areas:"el tower forge";gap:10px;min-height:0}
-#pEl{grid-area:el}#pTower{grid-area:tower}#pForge{grid-area:forge}
+/* two pages: 研法閣 (#) = 屬性盤 | 創招爐 | 雙手 ; 試煉塔 (#tower) = arena only */
+main{display:grid;grid-template-columns:minmax(236px,272px) minmax(0,1fr) minmax(300px,360px);grid-template-areas:"el forge hands";gap:10px;min-height:0}
+#pEl{grid-area:el}#pTower{grid-area:tower}#pForge{grid-area:forge}#pHands{grid-area:hands}
+.v-lab #pTower,.v-tower #pEl,.v-tower #pForge,.v-tower #pHands{display:none}
+.v-tower main{grid-template-columns:minmax(0,1fr);grid-template-areas:"tower"}
+@media(min-width:900px){
+  .v-tower .pb.tw{display:grid;grid-template-columns:minmax(0,1fr) minmax(320px,400px);gap:10px}
+  .v-tower .pb.tw>.arena{min-height:0}
+  .v-tower .pb.tw .tside{min-height:0}
+  .v-tower .pb.tw .log{flex:1;height:auto}
+}
+.views{display:flex;border:1px solid var(--line);border-radius:999px;padding:2px;background:var(--slab);flex:none}
+.views button{padding:4px 14px;border-radius:999px;font-family:var(--f-disp);font-size:15px;letter-spacing:.1em;color:var(--dim)}
+.views button.on{background:linear-gradient(180deg,#e2c072,#b8913e);color:#1b1608}
 #pTower{border-color:color-mix(in srgb,var(--gold) 45%,var(--line));box-shadow:0 0 40px -18px var(--gold)}
 #pTower .ph h2{color:var(--gold)}
 .pb.tw{display:flex;flex-direction:column;gap:8px;overflow:hidden}
@@ -122,11 +134,48 @@ main{display:grid;grid-template-columns:minmax(236px,272px) minmax(0,1fr) minmax
 .stats b{color:var(--paper)}
 .fx{margin:0;padding-left:16px;font-size:12.5px;line-height:1.5;color:#cfd4e3}
 .lib{display:flex;flex-direction:column;gap:5px}
-.sk{display:grid;grid-template-columns:auto 1fr auto auto;gap:8px;align-items:center;padding:6px 8px;border-radius:7px;background:var(--slab2);border:1px solid var(--line)}
+.sk{display:grid;grid-template-columns:auto 1fr auto auto auto;gap:6px;align-items:center;padding:6px 8px;border-radius:7px;background:var(--slab2);border:1px solid var(--line)}
 .sk.eq{border-color:color-mix(in srgb,var(--gold) 60%,transparent)}
-.sk .dots{display:flex;gap:2px}
+.dots{display:flex;gap:2px}
 .dot{width:16px;height:16px;border-radius:50%;display:grid;place-items:center;font-size:10px;font-family:var(--f-disp);font-weight:700;color:#10141f;background:var(--c)}
-.sk .nm{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--f-disp);font-size:15px}
+.sk .nm{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--f-disp);font-size:15px;text-align:left}
+.sk .nm:hover{color:var(--gold)}
+
+/* 雙手 */
+.hands{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.hand{border:1px dashed var(--line);border-radius:10px;padding:7px 9px;background:var(--slab2);display:flex;flex-direction:column;gap:3px;min-width:0;min-height:78px;box-sizing:border-box}
+.hand.f{border-style:solid;border-color:color-mix(in srgb,var(--c) 60%,var(--line));background:linear-gradient(160deg,color-mix(in srgb,var(--c) 14%,var(--slab2)),var(--slab2))}
+.hand .hl{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--dim);letter-spacing:.12em;min-height:22px}
+.hand b{font-family:var(--f-disp);font-size:16px;color:var(--c,var(--paper));white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hand small{font-size:11.5px;color:var(--dim);line-height:1.4}
+.ibtn.sm{width:22px;height:22px;font-size:11px}
+.cname{flex:1;min-width:0;font-family:var(--f-disp);font-size:20px;color:var(--gold)}
+
+/* 武學展示 */
+.mbox.show{max-width:440px;border-color:var(--sc);box-shadow:0 0 60px -20px var(--sc);gap:10px}
+.stage{position:relative;height:210px;display:grid;place-items:center;overflow:hidden;border-radius:12px;background:radial-gradient(circle at 50% 50%,color-mix(in srgb,var(--sc) 26%,transparent),transparent 65%),#0c0f18}
+.stage>*{grid-area:1/1}
+.ring{width:160px;height:160px;border-radius:50%;border:1.5px dashed color-mix(in srgb,var(--sc) 70%,transparent);animation:spin 16s linear infinite}
+.ring.r2{width:112px;height:112px;border:1px solid color-mix(in srgb,var(--sc) 45%,transparent);animation-direction:reverse;animation-duration:9s}
+@keyframes spin{to{transform:rotate(360deg)}}
+.sg{font-family:var(--f-disp);font-weight:700;color:var(--c);text-shadow:0 0 18px var(--c);white-space:nowrap}
+.sg.sc{font-size:68px;animation:pop .7s .6s both}
+.sg.sl,.sg.sr{font-size:42px;opacity:0}
+.sg.sl{animation:fromL .65s ease-in both}
+.sg.sr{animation:fromR .65s ease-in both}
+@keyframes fromL{0%{transform:translateX(-170px);opacity:0}25%{opacity:1}100%{transform:translateX(0) scale(.5);opacity:0}}
+@keyframes fromR{0%{transform:translateX(170px);opacity:0}25%{opacity:1}100%{transform:translateX(0) scale(.5);opacity:0}}
+@keyframes pop{0%{transform:scale(.2);opacity:0}60%{transform:scale(1.25);opacity:1}100%{transform:scale(1);opacity:1}}
+.burst{width:24px;height:24px;border-radius:50%;background:var(--sc);filter:blur(5px);opacity:0;animation:burst .8s .55s ease-out}
+@keyframes burst{0%{opacity:.95;transform:scale(.2)}100%{opacity:0;transform:scale(10)}}
+.orb{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-family:var(--f-disp);font-weight:700;font-size:14px;color:#10141f;background:var(--c);box-shadow:0 0 12px var(--c);
+  animation:orbit 12s linear infinite,fadein .5s .9s both;animation-delay:calc(var(--i) * -12s / var(--n)),.9s}
+@keyframes orbit{from{transform:rotate(0) translateX(80px) rotate(0)}to{transform:rotate(360deg) translateX(80px) rotate(-360deg)}}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+.sname{margin:0;text-align:center;font-family:var(--f-disp);font-size:26px;letter-spacing:.08em;color:var(--paper)}
+.sname span{display:inline-block;animation:rise .4s both;animation-delay:calc(1s + var(--i) * .07s)}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.mbox.show .fx{align-self:center}
 .sk .nm small{color:var(--dim);font-family:var(--f-body);font-size:11px;margin-left:4px}
 .ibtn{width:28px;height:28px;border-radius:6px;border:1px solid var(--line);display:grid;place-items:center;font-size:13px;color:var(--dim)}
 .ibtn.on{color:var(--gold);border-color:var(--gold)}
@@ -163,6 +212,10 @@ main{display:grid;grid-template-columns:minmax(236px,272px) minmax(0,1fr) minmax
 .act:hover:not(:disabled){border-color:var(--gold)}
 .act:disabled{opacity:.4;cursor:not-allowed}
 .act.ghost{border-style:dashed;color:var(--dim)}
+.act.combo{grid-column:1/-1;border-color:color-mix(in srgb,var(--gold) 60%,var(--line));background:linear-gradient(160deg,color-mix(in srgb,var(--gold) 14%,var(--slab2)),var(--slab2))}
+.act.combo b{color:var(--gold)}
+.act.combo.ghost{border-color:var(--line);background:var(--slab2)}
+.act.combo.ghost b{color:var(--dim)}
 .subacts{display:flex;gap:6px}
 .subacts .btn{flex:1;font-size:13px;padding:6px}
 .log{font-size:12.5px;line-height:1.5;color:#c8cede;display:flex;flex-direction:column-reverse;gap:1px;min-height:40px;max-height:96px;overflow:auto}
@@ -188,11 +241,14 @@ main{display:grid;grid-template-columns:minmax(236px,272px) minmax(0,1fr) minmax
 @media(max-width:899px){
   .app{grid-template-rows:auto 1fr auto}
   main{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr);grid-template-areas:none}
-  main>#pEl,main>#pTower,main>#pForge{grid-area:auto}
+  main>#pEl,main>#pTower,main>#pForge,main>#pHands{grid-area:auto}
   .pb.tw .log{height:auto;max-height:none}
-  header{gap:8px;flex-wrap:nowrap}
+  header{gap:8px;flex-wrap:wrap}
   .logo small,.who .best,.expbar{display:none}
-  .who{gap:5px;flex-wrap:nowrap;overflow:hidden}
+  .who{gap:5px;flex-wrap:nowrap;overflow:hidden;order:3;flex-basis:100%}
+  .views{margin-left:auto}
+  .views button{padding:3px 10px;font-size:14px}
+  .v-tower .tabs{display:none!important}
   .pill{font-size:12px;padding:2px 8px}
   .who .pill:first-child{overflow:hidden;text-overflow:ellipsis;min-width:0}
   .pb.tw,.pb.fg{display:flex;flex-direction:column;overflow:auto}
@@ -215,6 +271,7 @@ main{display:grid;grid-template-columns:minmax(236px,272px) minmax(0,1fr) minmax
 <div class="app">
   <header>
     <div class="logo">仙魔雙修<small>Arcanum · Daoist</small></div>
+    <nav class="views" id="views" aria-label="切換頁面"><button data-v="lab">研法閣</button><button data-v="tower">試煉塔</button></nav>
     <div class="who" id="who"></div>
     <button class="hbtn" id="resetBtn">重新入門</button>
   </header>
@@ -270,8 +327,15 @@ main{display:grid;grid-template-columns:minmax(236px,272px) minmax(0,1fr) minmax
         <div><div class="lbl">二 · 選招式形態</div><div class="forms" id="fforms" style="margin-top:5px"></div></div>
         <div class="preview" id="preview"></div>
         </div>
+      </div>
+    </section>
+    <section class="panel" id="pHands">
+      <div class="ph"><h2>雙手</h2><span>左右手各持一招</span></div>
+      <div class="pb">
+        <div class="hands" id="hands"></div>
+        <div class="preview" id="combo"></div>
         <div>
-          <div class="ph" style="padding:0 0 4px;border:0"><span class="lbl">武學庫 · ★ 裝備（最多 4 招）</span><span id="libCount"></span></div>
+          <div class="ph" style="padding:0 0 4px;border:0"><span class="lbl">武學庫 · 撳「左」「右」上手，撳名睇展示</span><span id="libCount"></span></div>
           <div class="lib" id="lib"></div>
         </div>
       </div>
@@ -279,7 +343,7 @@ main{display:grid;grid-template-columns:minmax(236px,272px) minmax(0,1fr) minmax
 
   </main>
   <nav class="tabs" id="tabs">
-    <button data-t="pEl">屬性</button><button data-t="pForge">創招</button><button data-t="pTower" class="on">試煉</button>
+    <button data-t="pEl">屬性</button><button data-t="pForge" class="on">創招</button><button data-t="pHands">雙手</button>
   </nav>
 </div>
 <div class="modal" id="modal" hidden></div>
@@ -347,7 +411,8 @@ const BOSS=['心魔','雷劫化身','墮天使','九尾天狐','深淵魔龍','�
 
 /* ---------- 狀態 ---------- */
 const KEY='xianmo-v1';
-let S=null,B=null,sel={els:[],form:'sword',name:'',auto:''},fz=[],curEl='fire',tab='pTower';
+let S=null,B=null,sel={els:[],form:'sword',name:'',auto:''},fz=[],curEl='fire',tab='pForge';
+let view=location.hash==='#tower'?'tower':'lab';document.body.className='v-'+view;
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 function load(){try{const v=localStorage.getItem(KEY);return v?JSON.parse(v):null}catch(e){return null}}
 
@@ -391,6 +456,27 @@ function fxLines(els,form){
   return out;
 }
 
+/* ---------- 雙手合擊 ---------- */
+const HAND={L:'左手',R:'右手'};
+const getSk=id=>S.skills.find(s=>s.id===id);
+const partCost=sk=>sk.els.includes('blood')?Math.round(sk.mp/2):sk.mp;
+function genCombo(L,R,extra){
+  const a=L.els[0],b=R.els[0],xian=S.school==='xian',w=k=>pick(EL[k][xian?'w':'a']);
+  const head=extra?w(extra):a===b?w(a):w(a)+(xian?'':'×')+w(b);
+  return xian?head+'·'+pick(['兩儀合璧','左右互搏','雙龍出海','陰陽交泰','乾坤一擲']):head+'・'+pick(['雙重詠唱','複合魔法','雙極共鳴','融合術式']);
+}
+/* 兩手屬性啱融合配方 → 化生異屬性 ×1.4；相剋 ×1.3；同屬性 ×1.2；其餘 ×1.15。耗氣 = 兩招 ×1.2 */
+function comboInfo(){
+  const L=getSk(S.hands.L),R=getSk(S.hands.R);if(!L||!R)return null;
+  const hasL=k=>L.els.includes(k),hasR=k=>R.els.includes(k);
+  const extra=ORDER.find(k=>{const r=EL[k].r;return r&&!hasL(k)&&!hasR(k)&&((hasL(r[0])&&hasR(r[1]))||(hasL(r[1])&&hasR(r[0])))});
+  const clash=L.els.some(a=>R.els.some(b=>a!==b&&CLASH(a,b)));
+  const [mult,tag]=extra?[1.4,`化生「${full(extra)}」`]:clash?[1.3,'相剋相成']:L.els.some(hasR)?[1.2,'同源共鳴']:[1.15,'雙手同心'];
+  const key=[L.id,R.id].sort().join('|');
+  if(!S.combos[key])S.combos[key]=genCombo(L,R,extra);
+  return {L,R,extra,mult,tag,key,name:S.combos[key],mp:Math.round((partCost(L)+partCost(R))*1.2),els:[...new Set([...L.els,...R.els,...(extra?[extra]:[])])]};
+}
+
 /* ---------- 戰鬥 ---------- */
 function newFoe(){
   const f=S.floor,boss=f%5===0;
@@ -410,17 +496,30 @@ function addLog(t){B.log.unshift(t);B.log=B.log.slice(0,7)}
 function floatNum(t,color){const s=document.createElement('span');s.className='fl';s.textContent=t;s.style.color=color;s.style.left=(40+Math.random()*20)+'%';$('floats').appendChild(s);setTimeout(()=>s.remove(),1000)}
 function hitAnim(){const g=$('eGlyph');g.classList.remove('hit');void g.offsetWidth;g.classList.add('hit')}
 
-function useSkill(sk){
+/* parts = [一招] 或 [左手, 右手]；co = 合擊資料 */
+function cast(parts,co){
   if(B.over)return;
+  const p=B.p;
+  const cost=co?co.mp:partCost(parts[0]);
+  if(p.mp<cost){toast(`${SCHOOL[S.school].mpn}不足`);return}
+  p.mp-=cost;
+  parts.forEach(sk=>{if(sk.els.includes('blood'))p.hp=Math.max(1,p.hp-Math.round(maxHp()*.08))});
+  const msgs=[];
+  if(co){
+    msgs.push(`雙手合擊【${co.name}】（${co.tag}）`);
+    if(co.extra&&!S.owned.includes(co.extra)&&!S.rev.includes(co.extra)){S.rev.push(co.extra);msgs.push(`窺見「${full(co.extra)}」完整配方`);save()}
+  }
+  // 化生出嚟嘅異屬性附喺左手招
+  parts.forEach((sk,i)=>applyPart(i===0&&co&&co.extra?{...sk,els:[...sk.els,co.extra]}:sk,co?co.mult:1,msgs,i));
+  addLog(msgs.join('，'));
+  if((parts.some(sk=>sk.els.includes('time'))||(co&&co.extra==='time'))&&Math.random()<.25&&B.e.hp>0){addLog('⟲ 逆轉光陰，可再行動一次！');return afterPlayer(true)}
+  afterPlayer(false);
+}
+function applyPart(sk,mult,msgs,order){
   const p=B.p,e=B.e,F=FORM[sk.form];
   const hasEl=k=>sk.els.includes(k);
-  let mpCost=sk.mp;
-  if(hasEl('blood')){mpCost=Math.round(mpCost/2);const c=Math.round(maxHp()*.08);p.hp=Math.max(1,p.hp-c)}
-  if(p.mp<mpCost){toast(`${SCHOOL[S.school].mpn}不足`);return}
-  p.mp-=mpCost;
   const fxm=F.fxm||1,chm=F.chm||1,dur=F.chm?1:0;
-  let pw=sk.power*(p.atkUp?1.35:1);
-  const msgs=[];
+  let pw=sk.power*mult*(p.atkUp?1.35:1);
   // 傷害
   if(F.dmg>0){
     let m=1;
@@ -432,7 +531,7 @@ function useSkill(sk){
     let hits=[d];
     if(hasEl('wind'))hits.push(d*.4);
     if(hasEl('clone'))hits.push(d*.45,d*.45);
-    let total=0;hits.forEach((h,i)=>{h=Math.round(h);total+=h;setTimeout(()=>floatNum((crit&&i===0?'暴擊 ':'')+h,crit&&i===0?'#ffd36b':'#ffffff'),i*140)});
+    let total=0;hits.forEach((h,i)=>{h=Math.round(h);total+=h;setTimeout(()=>floatNum((crit&&i===0?'暴擊 ':'')+h,crit&&i===0?'#ffd36b':'#ffffff'),order*380+i*140)});
     e.hp-=total;hitAnim();
     msgs.push(`使出【${sk.name}】造成 ${total} 傷害${m>1.05&&!hasEl('space')?'（相剋！）':''}${m<1?'（被剋）':''}${crit?'，暴擊':''}`);
     if(hasEl('yin')){const h=Math.round(total*.3);p.hp=Math.min(maxHp(),p.hp+h);msgs.push(`吸納 ${h} 生命`)}
@@ -459,9 +558,6 @@ function useSkill(sk){
       case 'illusion':if(Math.random()<.4*chm){e.confuse=1;msgs.push('敵人陷入幻境')}break;
     }
   });
-  addLog(msgs.join('，'));
-  if(hasEl('time')&&Math.random()<.25&&e.hp>0){addLog('⟲ 逆轉光陰，可再行動一次！');return afterPlayer(true)}
-  afterPlayer(false);
 }
 function basicAttack(){
   if(B.over)return;
@@ -531,8 +627,9 @@ function fuse(){
   if(!found||S.owned.includes(found)){toast(found?'已經領悟過':'參悟無果，換個組合試試');fz=[];return render()}
   const cost=found==='clone'?5:3;
   if(S.wx<cost)return toast(`悟性不足（需要 ${cost}）`);
+  const [a,b]=fz;
   S.wx-=cost;S.owned.push(found);if(!S.rev.includes(found))S.rev.push(found);fz=[];curEl=found;
-  toast(`頓悟！領悟異屬性「${full(found)}」`);save();render();
+  save();render();showFuse(found,a,b);
 }
 
 /* ---------- render ---------- */
@@ -579,11 +676,29 @@ function render(){
     $('reroll').onclick=()=>{sel.name=genName(sel.els,sel.form);render()};
     $('createBtn').onclick=create;
   }
+  // hands
+  const dots=sk=>`<div class="dots">${sk.els.map(k=>`<span class="dot" style="--c:${EL[k].c}">${EL[k].n}</span>`).join('')}</div>`;
+  $('hands').innerHTML=['L','R'].map(h=>{const sk=getSk(S.hands[h]);
+    return sk?`<div class="hand f" style="--c:${EL[sk.els[0]].c}"><div class="hl"><span>${HAND[h]}</span><button class="ibtn sm" data-off="${h}" aria-label="卸下${HAND[h]}">✕</button></div><b>${esc(sk.name)}</b>${dots(sk)}<small>${FORM[sk.form].n}・威力 ${sk.power}・耗 ${partCost(sk)}</small></div>`
+      :`<div class="hand"><div class="hl"><span>${HAND[h]}</span></div><b style="color:var(--dim)">空手</b><small>喺武學庫撳「${h==='L'?'左':'右'}」上手</small></div>`}).join('');
+  const co=comboInfo(),cb=$('combo');
+  if(!co){cb.className='preview empty';cb.innerHTML='左右手各上一招，就可以<b style="color:var(--gold)">雙手合擊</b>：兩招同一回合齊出，效果全部生效。兩手屬性相剋威力 ×1.3；啱某條融合配方仲會化生異屬性，×1.4。'}
+  else{
+    cb.className='preview';
+    cb.innerHTML=`<div class="lbl">雙手合擊</div>
+     <div class="pname"><b class="cname">${esc(co.name)}</b><button class="ibtn" id="coRe" title="換個名">↻</button></div>
+     <div class="stats"><span style="color:var(--gold)">${co.tag}</span><span>威力 <b>×${co.mult}</b></span><span>${sch.mpn} <b>${co.mp}</b></span></div>
+     <ul class="fx"><li>左手【${esc(co.L.name)}】＋右手【${esc(co.R.name)}】同一回合齊出</li>${co.extra?`<li>化生${full(co.extra)}・${EL[co.extra].fx}</li>`:''}</ul>
+     <button class="btn pri" id="coShow">演示合擊</button>`;
+    $('coRe').onclick=()=>{S.combos[co.key]=genCombo(co.L,co.R,co.extra);save();render()};
+    $('coShow').onclick=()=>showCombo(comboInfo());
+  }
   $('libCount').textContent=`${S.skills.length}/12`;
-  $('lib').innerHTML=S.skills.map(sk=>{const eq=S.equip.includes(sk.id);
-    return `<div class="sk ${eq?'eq':''}"><div class="dots">${sk.els.map(k=>`<span class="dot" style="--c:${EL[k].c}">${EL[k].n}</span>`).join('')}</div>
-     <div class="nm">${esc(sk.name)}<small>${FORM[sk.form].n}・威力 ${sk.power}・耗 ${sk.mp}</small></div>
-     <button class="ibtn ${eq?'on':''}" data-eq="${sk.id}" aria-label="裝備">★</button>
+  $('lib').innerHTML=S.skills.map(sk=>{const inL=S.hands.L===sk.id,inR=S.hands.R===sk.id;
+    return `<div class="sk ${inL||inR?'eq':''}">${dots(sk)}
+     <button class="nm" data-show="${sk.id}" title="武學展示">${esc(sk.name)}<small>${FORM[sk.form].n}・威力 ${sk.power}・耗 ${partCost(sk)}</small></button>
+     <button class="ibtn ${inL?'on':''}" data-hand="L" data-id="${sk.id}" aria-label="放左手">左</button>
+     <button class="ibtn ${inR?'on':''}" data-hand="R" data-id="${sk.id}" aria-label="放右手">右</button>
      <button class="ibtn ${delArm===sk.id?'warn':''}" data-del="${sk.id}" aria-label="廢除">${delArm===sk.id?'確':'✕'}</button></div>`}).join('')||'<div class="hint">未有武學。</div>';
   // battle
   const e=B.e,p=B.p;
@@ -602,10 +717,11 @@ function render(){
   $('pMp').style.width=clamp(p.mp/maxMp()*100,0,100)+'%';$('pMpT').textContent=`${sch.mpn} ${p.mp} / ${maxMp()}`;
   const ps=[];if(p.atkUp)ps.push(`化形 ${p.atkUp}`);if(p.evade)ps.push('遁影');if(p.regen)ps.push(`長生 ${p.regen}`);if(p.summon)ps.push(`靈獸 ${p.summon}`);
   $('pSt').innerHTML=ps.map(s=>`<span>${s}</span>`).join('');
-  const eqs=S.equip.map(id=>S.skills.find(s=>s.id===id)).filter(Boolean);
-  let ah='';for(let i=0;i<4;i++){const sk=eqs[i];
-    if(sk)ah+=`<button class="act" data-use="${sk.id}" ${B.over||p.mp<(sk.els.includes('blood')?Math.round(sk.mp/2):sk.mp)?'disabled':''}><b style="color:${EL[sk.els[0]].c}">${esc(sk.name)}</b><small>${sk.els.map(full).join('・')}・${FORM[sk.form].n}・耗 ${sk.mp}</small></button>`;
-    else ah+=`<button class="act ghost" data-goto="pForge"><b>空招位</b><small>去創招爐裝備 ★</small></button>`}
+  let ah='';['L','R'].forEach(h=>{const sk=getSk(S.hands[h]);
+    if(sk)ah+=`<button class="act" data-use="${h}" ${B.over||p.mp<partCost(sk)?'disabled':''}><small>${HAND[h]}</small><b style="color:${EL[sk.els[0]].c}">${esc(sk.name)}</b><small>${sk.els.map(full).join('・')}・${FORM[sk.form].n}・耗 ${partCost(sk)}</small></button>`;
+    else ah+=`<button class="act ghost" data-goto="pHands"><small>${HAND[h]}</small><b>空手</b><small>去研法閣上手</small></button>`});
+  ah+=co?`<button class="act combo" data-use="C" ${B.over||p.mp<co.mp?'disabled':''}><small>雙手合擊 · ${co.tag} · 威力 ×${co.mult}</small><b>${esc(co.name)}</b><small>${co.els.map(full).join('・')}・耗 ${co.mp}</small></button>`
+    :`<button class="act combo ghost" data-goto="pHands"><small>雙手合擊</small><b>左右手都上招先用得</b><small>去研法閣配招</small></button>`;
   $('acts').innerHTML=ah;
   if(B.over==='win')$('subacts').innerHTML=`<div class="res" style="width:100%"><button class="btn pri" id="nextBtn">登上第 ${S.floor+1} 層</button></div>`;
   else if(B.over==='lose')$('subacts').innerHTML=`<div class="res" style="width:100%"><button class="btn pri" id="backBtn">退回第 ${Math.max(1,S.floor-1)} 層</button><button class="btn" id="againBtn">原層再戰</button></div>`;
@@ -616,17 +732,82 @@ function render(){
   if($('againBtn'))$('againBtn').onclick=()=>retreat(false);
   if($('atkBtn'))$('atkBtn').onclick=basicAttack;
   if($('medBtn'))$('medBtn').onclick=meditate;
-  // tabs
-  document.querySelectorAll('main>.panel').forEach(pn=>pn.classList.toggle('show',pn.id===tab));
+  // pages + tabs
+  document.querySelectorAll('main>.panel').forEach(pn=>pn.classList.toggle('show',view==='tower'?pn.id==='pTower':pn.id===tab));
   document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===tab));
+  document.querySelectorAll('#views button').forEach(b=>b.classList.toggle('on',b.dataset.v===view));
 }
 let delArm=null;
 function create(){
   const st=calcSkill(sel.els,sel.form);
   const name=(sel.name||'').trim()||genName(sel.els,sel.form);
   const sk={id:Date.now().toString(36),name,els:[...sel.els],form:sel.form,power:st.power,mp:st.mp};
-  S.skills.push(sk);if(S.equip.length<4)S.equip.push(sk.id);
-  sel.auto='';toast(`創出武學【${name}】${S.equip.includes(sk.id)?'，已裝備':''}`);save();render();
+  S.skills.push(sk);
+  const h=!S.hands.L?'L':!S.hands.R?'R':null;
+  let co=null;
+  if(h){S.hands[h]=sk.id;co=comboInfo()}
+  sel.auto='';save();render();
+  showSkill(sk,h,co?()=>showCombo(co):null);
+}
+/* 新組合（之前未見過）就展示合擊 */
+function setHand(h,id){
+  const o=h==='L'?'R':'L';
+  if(S.hands[h]===id)S.hands[h]=null;
+  else{if(S.hands[o]===id)S.hands[o]=S.hands[h];S.hands[h]=id}
+  const isNew=S.hands.L&&S.hands.R&&!S.combos[[S.hands.L,S.hands.R].sort().join('|')];
+  render();save();
+  if(isNew)showCombo(comboInfo());
+}
+
+/* ---------- 武學展示 ---------- */
+function showcase(o){
+  const m=$('modal');
+  const g=(x,cls)=>`<span class="sg ${cls}" style="--c:${x.c}">${x.g}</span>`;
+  m.innerHTML=`<div class="mbox show" style="--sc:${o.color}" role="dialog" aria-label="武學展示">
+    <div class="lbl" style="text-align:center">${o.label}</div>
+    <div class="stage">
+      <div class="ring"></div><div class="ring r2"></div>
+      ${(o.orbit||[]).map((x,i,a)=>`<span class="orb" style="--c:${x.c};--i:${i};--n:${a.length}">${x.g}</span>`).join('')}
+      ${o.left?g(o.left,'sl'):''}${o.right?g(o.right,'sr'):''}
+      <div class="burst"></div>
+      ${g(o.center,'sc')}
+    </div>
+    <h2 class="sname">${[...o.name].map((ch,i)=>`<span style="--i:${i}">${esc(ch)}</span>`).join('')}</h2>
+    ${o.stats?`<div class="stats" style="justify-content:center">${o.stats}</div>`:''}
+    ${o.fx?`<ul class="fx">${o.fx.map(l=>`<li>${l}</li>`).join('')}</ul>`:''}
+    <div style="display:flex;gap:8px"><button class="btn" id="scClose" style="flex:1">${o.then?'下一步':'收功'}</button>${o.go?`<button class="btn pri" id="scGo" style="flex:1">${o.go[0]}</button>`:''}</div>
+  </div>`;
+  const close=()=>{m.hidden=true;m.onclick=null;scClose=null;if(o.then)o.then()};
+  scClose=close;
+  $('scClose').onclick=close;
+  if(o.go)$('scGo').onclick=()=>{o.then=null;close();o.go[1]()};
+  m.onclick=ev=>{if(ev.target===m)close()};
+  m.hidden=false;$('scClose').focus();
+}
+let scClose=null;
+const tryTower=['去試煉塔試招',()=>{location.hash='tower'}];
+function showSkill(sk,h,then){
+  const c=EL[sk.els[0]].c,F=FORM[sk.form];
+  showcase({label:`武學展示 · ${F.n}・${F.d}${h?` · 已放${HAND[h]}`:''}`,name:sk.name,color:c,
+    left:{g:sk.els.map(k=>EL[k].n).join(''),c},right:{g:F.n,c:'var(--gold)'},center:{g:F.n,c},
+    orbit:sk.els.map(k=>({g:EL[k].n,c:EL[k].c})),
+    stats:`<span>威力 <b>${sk.power}</b></span><span>${SCHOOL[S.school].mpn} <b>${sk.mp}</b></span>`,
+    fx:fxLines(sk.els,sk.form),go:then?null:tryTower,then});
+}
+function showFuse(k,a,b){
+  showcase({label:'參悟融合 · 領悟異屬性',name:full(k),color:EL[k].c,
+    left:{g:EL[a].n,c:EL[a].c},right:{g:EL[b].n,c:EL[b].c},center:{g:EL[k].n,c:EL[k].c},
+    stats:`<span>${full(a)} ＋ ${full(b)}</span>`,fx:[EL[k].fx],
+    go:['入爐創招',()=>{tab='pForge';sel.els=[k];if(location.hash)location.hash='';else render()}]});
+}
+function showCombo(co){
+  if(!co)return;
+  const c=co.extra?EL[co.extra].c:'var(--gold)';
+  showcase({label:`雙手合擊 · ${co.tag}`,name:co.name,color:c,
+    left:{g:FORM[co.L.form].n,c:EL[co.L.els[0]].c},right:{g:FORM[co.R.form].n,c:EL[co.R.els[0]].c},center:{g:co.extra?EL[co.extra].n:'合',c},
+    orbit:co.els.map(k=>({g:EL[k].n,c:EL[k].c})),
+    stats:`<span>左手 <b>${esc(co.L.name)}</b></span><span>右手 <b>${esc(co.R.name)}</b></span><span>威力 <b>×${co.mult}</b></span><span>耗 <b>${co.mp}</b></span>`,
+    fx:['左右手同一回合齊出，兩招效果全部生效',...(co.extra?[`化生${full(co.extra)}・${EL[co.extra].fx}`]:[])],go:tryTower});
 }
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let tt;function toast(m){const t=$('toast');t.textContent=m;t.hidden=false;clearTimeout(tt);tt=setTimeout(()=>t.hidden=true,2400)}
@@ -638,19 +819,26 @@ $('fuseBtn').onclick=fuse;
 $('fchips').onclick=ev=>{const b=ev.target.closest('[data-k]');if(!b)return;const k=b.dataset.k;
   if(sel.els.includes(k))sel.els=sel.els.filter(x=>x!==k);else{if(sel.els.length>=maxEl()){toast(`目前境界每招最多 ${maxEl()} 種屬性`);return}sel.els.push(k)}render()};
 $('fforms').onclick=ev=>{const b=ev.target.closest('[data-f]');if(!b)return;sel.form=b.dataset.f;render()};
-$('lib').onclick=ev=>{const q=ev.target.closest('[data-eq]'),d=ev.target.closest('[data-del]');
-  if(q){const id=q.dataset.eq;if(S.equip.includes(id))S.equip=S.equip.filter(x=>x!==id);else{if(S.equip.length>=4)return toast('最多裝備 4 招，先卸下一招');S.equip.push(id)}save();render()}
+$('lib').onclick=ev=>{const q=ev.target.closest('[data-hand]'),d=ev.target.closest('[data-del]'),s=ev.target.closest('[data-show]');
+  if(q)setHand(q.dataset.hand,q.dataset.id);
+  if(s){const sk=getSk(s.dataset.show);if(sk)showSkill(sk)}
   if(d){const id=d.dataset.del;if(delArm!==id){delArm=id;render();setTimeout(()=>{if(delArm===id){delArm=null;render()}},2500);return}
-    S.skills=S.skills.filter(s=>s.id!==id);S.equip=S.equip.filter(x=>x!==id);delArm=null;save();render()}};
+    S.skills=S.skills.filter(s=>s.id!==id);['L','R'].forEach(h=>{if(S.hands[h]===id)S.hands[h]=null});delArm=null;save();render()}};
+$('hands').onclick=ev=>{const o=ev.target.closest('[data-off]');if(o){S.hands[o.dataset.off]=null;save();render()}};
 $('acts').onclick=ev=>{const u=ev.target.closest('[data-use]'),g=ev.target.closest('[data-goto]');
-  if(u){const sk=S.skills.find(s=>s.id===u.dataset.use);if(sk)useSkill(sk)}
-  if(g){tab=g.dataset.goto;render()}};
+  if(u){const k=u.dataset.use;
+    if(k==='C'){const co=comboInfo();if(co)cast([co.L,co.R],co)}
+    else{const sk=getSk(S.hands[k]);if(sk)cast([sk])}}
+  if(g){tab=g.dataset.goto;location.hash=''}};
 $('tabs').onclick=ev=>{const b=ev.target.closest('[data-t]');if(b){tab=b.dataset.t;render()}};
+$('views').onclick=ev=>{const b=ev.target.closest('[data-v]');if(b)location.hash=b.dataset.v==='tower'?'tower':''};
+window.addEventListener('hashchange',()=>{view=location.hash==='#tower'?'tower':'lab';document.body.className='v-'+view;render()});
+document.addEventListener('keydown',ev=>{if(ev.key==='Escape'&&scClose)scClose()});
 $('resetBtn').onclick=()=>showStart(true);
 
 /* ---------- 入門 ---------- */
 function showStart(isReset){
-  const m=$('modal');let path='xian',root='fire',nm='';
+  const m=$('modal');let path='xian',root='fire',nm='';m.onclick=null;scClose=null;
   const draw=()=>{
     const roots=ORDER.filter(k=>EL[k].t==='base'||EL[k].t===path);
     m.innerHTML=`<div class="mbox">
@@ -671,22 +859,27 @@ function showStart(isReset){
     m.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{root=b.dataset.r;draw()});
     if($('cancelStart'))$('cancelStart').onclick=()=>m.hidden=true;
     $('goBtn').onclick=()=>{
-      S={name:nm.trim()||(path==='xian'?'無名散修':'無名學徒'),school:path,level:1,exp:0,wx:3,floor:1,best:0,owned:[root],skills:[],equip:[],rev:[]};
+      S={name:nm.trim()||(path==='xian'?'無名散修':'無名學徒'),school:path,level:1,exp:0,wx:3,floor:1,best:0,owned:[root],skills:[],hands:{L:'s0',R:null},combos:{},rev:[]};
       const st=calcSkill([root],'palm');
       const sk={id:'s0',name:genName([root],'palm'),els:[root],form:'palm',power:st.power,mp:st.mp};
-      S.skills.push(sk);S.equip.push(sk.id);curEl=root;sel={els:[root],form:'sword',name:'',auto:''};fz=[];
+      S.skills.push(sk);curEl=root;sel={els:[root],form:'sword',name:'',auto:''};fz=[];tab='pForge';
       B=null;newBattle(false);save();m.hidden=true;render();
-      toast('起始送你 3 悟性：去屬性盤修習新屬性吧');
+      toast('左手已有一招。創第二招放右手，就可以雙手合擊');
     };
   };
   draw();m.hidden=false;
 }
 
 S=load();
-if(S&&S.owned){if(!S.rev)S.rev=[];newBattle(false);curEl=S.owned[0];render()}
+if(S&&S.owned){
+  if(!S.rev)S.rev=[];
+  // 舊存檔：4 個裝備位 → 頭兩招放左右手
+  if(!S.hands){const q=S.equip||[];S.hands={L:q[0]||null,R:q[1]||null};delete S.equip}
+  if(!S.combos)S.combos={};
+  newBattle(false);curEl=S.owned[0];render()}
 else{
   // 示範畫面：背景用樣本角色，入門後換成你的
-  S={name:'示範',school:'xian',level:1,exp:0,wx:3,floor:1,best:0,owned:['fire'],skills:[],equip:[],rev:[]};
+  S={name:'示範',school:'xian',level:1,exp:0,wx:3,floor:1,best:0,owned:['fire'],skills:[],hands:{L:null,R:null},combos:{},rev:[]};
   newBattle(false);render();S=null;showStart(false);
 }
 })();
