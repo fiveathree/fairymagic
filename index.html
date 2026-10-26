@@ -1,0 +1,664 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>仙魔雙修</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="仙門修真與魔法學院同場：參悟屬性、融合異能、自創武學，闖試煉塔。">
+<meta property="og:title" content="仙魔雙修 · 自創武學">
+<meta property="og:description" content="風木水火土、陰陽光暗，再融合雷、時間、空間、分身……自創你的獨門武學。">
+<meta property="og:image" content="og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23141a2e'/%3E%3Ccircle cx='32' cy='32' r='22' fill='none' stroke='%23d8b25c' stroke-width='3'/%3E%3Cpath d='M32 10a22 22 0 0 1 0 44a11 11 0 0 1 0-22a11 11 0 0 0 0-22z' fill='%23d8b25c'/%3E%3Ccircle cx='32' cy='21' r='3.5' fill='%23141a2e'/%3E%3Ccircle cx='32' cy='43' r='3.5' fill='%23d8b25c'/%3E%3Cpath d='M32 6l7 20h-14z' fill='none' stroke='%237f8cff' stroke-width='2' opacity='.8'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Cinzel:wght@600&display=swap">
+<style>
+/* Layout: one-screen grimoire desk — 屬性盤 | 創招爐 | 試煉塔, tabs on phone. Single dark look (night study, gold leaf + arcane violet). */
+:root{
+  color-scheme:dark;
+  --ink:#10141f;      /* page */
+  --slab:#181e2e;     /* panels */
+  --slab2:#212a40;    /* raised */
+  --line:#33405e;
+  --paper:#ece3cf;    /* text */
+  --dim:#9aa3ba;
+  --gold:#d8b25c;     /* 仙門 / primary */
+  --arc:#8d97ff;      /* 學院 */
+  --seal:#d2483a;     /* danger / hp */
+  --jade:#5fc9a0;     /* good */
+  --mp:#5aa2ea;
+  --f-disp:"LXGW WenKai TC","Noto Serif TC","PingFang TC","Microsoft JhengHei",serif;
+  --f-body:"LXGW WenKai TC","PingFang TC","Microsoft JhengHei","Noto Sans TC",sans-serif;
+  --f-latin:"Cinzel","Times New Roman",serif;
+}
+html,body{height:100%}
+body{background:var(--ink);color:var(--paper);font-family:var(--f-body);font-size:14px;overflow:hidden;
+  background-image:radial-gradient(1200px 500px at 15% -10%,rgba(216,178,92,.10),transparent 60%),radial-gradient(900px 500px at 100% 110%,rgba(141,151,255,.12),transparent 60%);}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.app{height:100%;display:grid;grid-template-rows:auto 1fr;padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px));padding-block:10px;gap:10px;box-sizing:border-box}
+@media(max-width:400px){.app{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}}
+
+/* header */
+header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;min-width:0}
+.logo{font-family:var(--f-disp);font-weight:700;font-size:24px;letter-spacing:.12em;white-space:nowrap;
+  background:linear-gradient(90deg,var(--gold),#f3e2a6 45%,var(--arc));-webkit-background-clip:text;background-clip:text;color:transparent}
+.logo small{font-family:var(--f-latin);font-size:10px;letter-spacing:.3em;color:var(--dim);-webkit-text-fill-color:var(--dim);display:block;margin-top:-3px}
+.who{display:flex;gap:10px;align-items:center;flex:1;min-width:0;flex-wrap:wrap}
+.pill{border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:13px;white-space:nowrap;background:var(--slab)}
+.pill b{color:var(--gold);font-weight:700}
+.pill.arc b{color:var(--arc)}
+.expbar{width:120px;height:6px;border-radius:3px;background:var(--slab2);overflow:hidden}
+.expbar i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),#f6dd8f);width:0;transition:width .4s}
+.hbtn{font-size:12px;color:var(--dim);border:1px solid var(--line);border-radius:6px;padding:4px 8px}
+.hbtn:hover{color:var(--paper)}
+
+/* main panels */
+main{display:grid;grid-template-columns:minmax(250px,300px) minmax(300px,1fr) minmax(330px,1.15fr);gap:10px;min-height:0}
+.panel{background:var(--slab);border:1px solid var(--line);border-radius:10px;display:flex;flex-direction:column;min-height:0;min-width:0;overflow:hidden}
+.ph{display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding:9px 12px 7px;border-bottom:1px solid var(--line)}
+.ph h2{margin:0;font-family:var(--f-disp);font-size:17px;letter-spacing:.15em}
+.ph span{font-size:12px;color:var(--dim)}
+.pb{padding:10px 12px;overflow:auto;min-height:0;flex:1;display:flex;flex-direction:column;gap:10px}
+.lbl{font-size:11px;color:var(--dim);letter-spacing:.12em}
+
+/* elements */
+.egrid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.el{position:relative;aspect-ratio:1;max-width:100%;border-radius:8px;border:1px solid var(--line);background:var(--slab2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;transition:transform .15s,border-color .15s}
+.el .g{font-family:var(--f-disp);font-size:20px;font-weight:700;line-height:1}
+.el .s{font-size:9.5px;color:var(--dim)}
+.el.own{border-color:color-mix(in srgb,var(--c) 70%,transparent);background:color-mix(in srgb,var(--c) 16%,var(--slab2));box-shadow:inset 0 0 12px color-mix(in srgb,var(--c) 25%,transparent)}
+.el.own .g{color:var(--c)}
+.el:not(.own) .g{color:#56607a}
+.el.sel{outline:2px solid var(--c);outline-offset:1px}
+.el:hover{transform:translateY(-1px)}
+.el .tag{position:absolute;top:2px;right:3px;font-size:8.5px;color:var(--dim)}
+.info{background:var(--slab2);border-radius:8px;padding:9px 10px;font-size:13px;line-height:1.55;border:1px solid var(--line)}
+.info h3{margin:0 0 3px;font-family:var(--f-disp);font-size:16px;display:flex;gap:6px;align-items:center}
+.info .rc{color:var(--dim);font-size:12px}
+.btn{border-radius:7px;padding:7px 12px;font-weight:700;border:1px solid var(--line);background:var(--slab2);transition:background .15s,border-color .15s}
+.btn:hover:not(:disabled){border-color:var(--gold)}
+.btn.pri{background:linear-gradient(180deg,#e2c072,#b8913e);color:#1b1608;border-color:#e2c072}
+.btn.pri:hover:not(:disabled){filter:brightness(1.08)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.fuse{display:flex;align-items:center;gap:6px}
+.slot{width:42px;height:42px;border-radius:50%;border:1px dashed var(--line);display:grid;place-items:center;font-family:var(--f-disp);font-size:20px;font-weight:700}
+.slot.f{border-style:solid}
+.hint{font-size:12px;color:var(--dim);line-height:1.5}
+
+/* forge */
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.chip{display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:3px 9px 3px 4px;border:1px solid var(--line);background:var(--slab2);font-size:13px}
+.chip .d{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-family:var(--f-disp);font-weight:700;font-size:13px;background:color-mix(in srgb,var(--c) 30%,transparent);color:var(--c)}
+.chip.on{border-color:var(--c);background:color-mix(in srgb,var(--c) 18%,var(--slab2))}
+.forms{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
+.form{border:1px solid var(--line);border-radius:7px;padding:5px 4px;background:var(--slab2);text-align:center;font-size:13px}
+.form b{display:block;font-family:var(--f-disp);font-size:16px}
+.form small{color:var(--dim);font-size:10.5px}
+.form.on{border-color:var(--gold);background:color-mix(in srgb,var(--gold) 14%,var(--slab2))}
+.preview{border-radius:10px;padding:10px 12px;border:1px solid var(--gold);background:linear-gradient(160deg,color-mix(in srgb,var(--gold) 10%,var(--slab2)),var(--slab2));display:flex;flex-direction:column;gap:6px}
+.preview.empty{border-style:dashed;border-color:var(--line);background:var(--slab2);color:var(--dim);font-size:13px}
+.pname{display:flex;gap:6px;align-items:center}
+.pname input{flex:1;min-width:0;background:transparent;border:0;border-bottom:1px solid var(--line);color:var(--paper);font-family:var(--f-disp);font-size:20px;font-weight:700;padding:2px 0}
+.stats{display:flex;gap:12px;font-size:12.5px;color:var(--dim);font-variant-numeric:tabular-nums;flex-wrap:wrap}
+.stats b{color:var(--paper)}
+.fx{margin:0;padding-left:16px;font-size:12.5px;line-height:1.5;color:#cfd4e3}
+.lib{display:flex;flex-direction:column;gap:5px}
+.sk{display:grid;grid-template-columns:auto 1fr auto auto;gap:8px;align-items:center;padding:6px 8px;border-radius:7px;background:var(--slab2);border:1px solid var(--line)}
+.sk.eq{border-color:color-mix(in srgb,var(--gold) 60%,transparent)}
+.sk .dots{display:flex;gap:2px}
+.dot{width:16px;height:16px;border-radius:50%;display:grid;place-items:center;font-size:10px;font-family:var(--f-disp);font-weight:700;color:#10141f;background:var(--c)}
+.sk .nm{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--f-disp);font-size:15px}
+.sk .nm small{color:var(--dim);font-family:var(--f-body);font-size:11px;margin-left:4px}
+.ibtn{width:28px;height:28px;border-radius:6px;border:1px solid var(--line);display:grid;place-items:center;font-size:13px;color:var(--dim)}
+.ibtn.on{color:var(--gold);border-color:var(--gold)}
+.ibtn.warn{color:var(--seal);border-color:var(--seal)}
+
+/* battle */
+.arena{position:relative;border-radius:10px;border:1px solid var(--line);padding:10px 12px;display:flex;flex-direction:column;gap:6px;
+  background:radial-gradient(400px 160px at 50% 45%,color-mix(in srgb,var(--ec,#888) 22%,transparent),transparent 70%),var(--slab2)}
+.etop{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.ename{font-family:var(--f-disp);font-size:19px;font-weight:700}
+.ename.boss{color:var(--seal)}
+.foe{display:flex;align-items:center;justify-content:center;height:96px}
+.foe .glyph{font-family:var(--f-disp);font-size:68px;font-weight:700;color:var(--ec);text-shadow:0 0 24px var(--ec);transition:transform .12s}
+.foe .glyph.hit{animation:hit .35s}
+@keyframes hit{0%{transform:translateX(0)}25%{transform:translateX(-7px) scale(.94)}55%{transform:translateX(6px)}100%{transform:none}}
+.bar{height:9px;border-radius:5px;background:#0c0f18;overflow:hidden;position:relative}
+.bar i{display:block;height:100%;transition:width .3s}
+.bar.hp i{background:linear-gradient(90deg,#9a2b22,var(--seal))}
+.bar.mp i{background:linear-gradient(90deg,#2d64a8,var(--mp))}
+.bar.sh{height:4px}.bar.sh i{background:var(--gold)}
+.brow{display:flex;justify-content:space-between;font-size:12px;color:var(--dim);font-variant-numeric:tabular-nums}
+.st{display:flex;gap:4px;flex-wrap:wrap;min-height:20px}
+.st span{font-size:11px;padding:1px 6px;border-radius:4px;background:#0c0f18;border:1px solid var(--line)}
+.intent{font-size:12px;color:var(--seal);min-height:16px}
+.floats{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.fl{position:absolute;left:50%;top:38%;font-weight:700;font-size:20px;font-variant-numeric:tabular-nums;animation:fl 1s ease-out forwards;text-shadow:0 2px 6px #000}
+@keyframes fl{from{opacity:1;transform:translate(-50%,0)}to{opacity:0;transform:translate(-50%,-46px)}}
+.me{border-radius:10px;border:1px solid var(--line);padding:8px 12px;display:flex;flex-direction:column;gap:5px}
+.acts{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
+.act{border:1px solid var(--line);border-radius:8px;padding:6px 8px;background:var(--slab2);text-align:left;display:flex;flex-direction:column;gap:1px;min-width:0}
+.act b{font-family:var(--f-disp);font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.act small{font-size:11px;color:var(--dim);font-variant-numeric:tabular-nums}
+.act:hover:not(:disabled){border-color:var(--gold)}
+.act:disabled{opacity:.4;cursor:not-allowed}
+.act.ghost{border-style:dashed;color:var(--dim)}
+.subacts{display:flex;gap:6px}
+.subacts .btn{flex:1;font-size:13px;padding:6px}
+.log{font-size:12.5px;line-height:1.55;color:#c8cede;display:flex;flex-direction:column-reverse;gap:1px;min-height:60px}
+.log p{margin:0}
+.log p:first-child{color:var(--paper)}
+.res{display:flex;gap:6px}
+.res .btn{flex:1}
+
+/* toast + modal */
+.toast{position:fixed;left:50%;top:calc(12px + env(safe-area-inset-top,0px));transform:translateX(-50%);background:var(--slab2);border:1px solid var(--gold);color:var(--paper);padding:8px 16px;border-radius:8px;font-size:14px;z-index:30;transition:opacity .3s;max-width:90vw}
+.modal{position:fixed;inset:0;background:rgba(6,8,14,.82);display:grid;place-items:center;z-index:20;padding:16px;overflow:auto}
+.mbox{background:var(--slab);border:1px solid var(--gold);border-radius:14px;padding:20px;max-width:640px;width:100%;display:flex;flex-direction:column;gap:12px;box-sizing:border-box}
+.mbox h1{margin:0;font-family:var(--f-disp);font-size:30px;letter-spacing:.2em;text-align:center}
+.mbox p{margin:0;color:var(--dim);text-align:center;line-height:1.6}
+.paths{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.path{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--slab2);text-align:left;display:flex;flex-direction:column;gap:4px}
+.path b{font-family:var(--f-disp);font-size:20px}
+.path small{color:var(--dim);line-height:1.5}
+.path.on{border-color:var(--pc);box-shadow:0 0 0 1px var(--pc) inset}
+.nameIn{background:var(--slab2);border:1px solid var(--line);border-radius:8px;padding:8px 10px;color:var(--paper);font:inherit;font-size:16px;width:100%;box-sizing:border-box}
+
+.tabs{display:none}
+@media(max-width:899px){
+  .app{grid-template-rows:auto 1fr auto}
+  main{grid-template-columns:1fr}
+  main>.panel{display:none}
+  main>.panel.show{display:flex}
+  .tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding-bottom:env(safe-area-inset-bottom,0px)}
+  .tabs button{border:1px solid var(--line);border-radius:8px;padding:8px;background:var(--slab);font-family:var(--f-disp);font-size:15px;letter-spacing:.1em}
+  .tabs button.on{border-color:var(--gold);color:var(--gold)}
+  .expbar{width:70px}
+  .logo{font-size:20px}
+  .paths{grid-template-columns:1fr}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header>
+    <div class="logo">仙魔雙修<small>Arcanum · Daoist</small></div>
+    <div class="who" id="who"></div>
+    <button class="hbtn" id="resetBtn">重新入門</button>
+  </header>
+  <main>
+    <section class="panel" id="pEl">
+      <div class="ph"><h2>屬性盤</h2><span id="wxLbl"></span></div>
+      <div class="pb">
+        <div class="egrid" id="egrid"></div>
+        <div class="info" id="einfo"></div>
+        <div>
+          <div class="lbl">參悟融合 · 揀兩種已修屬性</div>
+          <div class="fuse" style="margin-top:6px">
+            <div class="slot" id="fz0">？</div><span>＋</span><div class="slot" id="fz1">？</div>
+            <button class="btn pri" id="fuseBtn" style="margin-left:auto">參悟（3 悟性）</button>
+          </div>
+          <p class="hint" id="fuseHint" style="margin:6px 0 0">喺上面撳已修屬性放入參悟位。配方啱就領悟異屬性，唔啱唔扣悟性。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" id="pForge">
+      <div class="ph"><h2>創招爐</h2><span id="maxElLbl"></span></div>
+      <div class="pb">
+        <div><div class="lbl">一 · 選屬性</div><div class="chips" id="fchips" style="margin-top:5px"></div></div>
+        <div><div class="lbl">二 · 選招式形態</div><div class="forms" id="fforms" style="margin-top:5px"></div></div>
+        <div class="preview" id="preview"></div>
+        <div>
+          <div class="ph" style="padding:0 0 4px;border:0"><span class="lbl">武學庫 · ★ 裝備（最多 4 招）</span><span id="libCount"></span></div>
+          <div class="lib" id="lib"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" id="pTower">
+      <div class="ph"><h2>試煉塔</h2><span id="floorLbl"></span></div>
+      <div class="pb">
+        <div class="arena" id="arena">
+          <div class="etop"><div class="ename" id="eName"></div><div class="chip" id="eEl"></div></div>
+          <div class="foe"><div class="glyph" id="eGlyph"></div></div>
+          <div class="bar hp"><i id="eHp"></i></div>
+          <div class="brow"><span id="eHpT"></span><span id="eAtk"></span></div>
+          <div class="st" id="eSt"></div>
+          <div class="intent" id="eIntent"></div>
+          <div class="floats" id="floats"></div>
+        </div>
+        <div class="me">
+          <div class="bar hp"><i id="pHp"></i></div>
+          <div class="bar sh"><i id="pSh"></i></div>
+          <div class="brow"><span id="pHpT"></span><span id="pShT"></span></div>
+          <div class="bar mp"><i id="pMp"></i></div>
+          <div class="brow"><span id="pMpT"></span><span></span></div>
+          <div class="st" id="pSt"></div>
+        </div>
+        <div class="acts" id="acts"></div>
+        <div class="subacts" id="subacts"></div>
+        <div class="log" id="log"></div>
+      </div>
+    </section>
+  </main>
+  <nav class="tabs" id="tabs">
+    <button data-t="pEl">屬性</button><button data-t="pForge">創招</button><button data-t="pTower" class="on">試煉</button>
+  </nav>
+</div>
+<div class="modal" id="modal" hidden></div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(()=>{
+const $=id=>document.getElementById(id);
+const rnd=(a,b)=>a+Math.random()*(b-a);
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+
+/* ---------- 屬性 ---------- */
+const EL={
+ wind:{n:'風',c:'#8fd9c4',t:'base',fx:'追擊：額外一段 40% 傷害',w:['扶搖','青冥','迴風'],a:['疾風','暴風','旋風']},
+ wood:{n:'木',c:'#7cc46a',t:'base',fx:'回春：回復威力 20% 生命',w:['青木','乙木','枯榮'],a:['森羅','藤蔓','翠綠']},
+ water:{n:'水',c:'#5fa8e8',t:'base',fx:'寒滯：敵人傷害 -20%（2 回合）',w:['玄水','滄浪','寒潭'],a:['冰霜','激流','潮汐']},
+ fire:{n:'火',c:'#ef6a3c',t:'base',fx:'灼燒：每回合 15% 威力（3 回合）',w:['離火','焚天','赤炎'],a:['烈焰','爆炎','火球']},
+ earth:{n:'土',c:'#c9a15a',t:'base',fx:'厚土：獲得 30% 威力護盾',w:['厚土','崑崙','戊土'],a:['岩石','大地','石膚']},
+ yin:{n:'陰',c:'#a8b0d6',t:'xian',fx:'吸納：吸血 30%',w:['太陰','九幽','玄陰'],a:['月蝕','冥寒','幽冥']},
+ yang:{n:'陽',c:'#f2c94c',t:'xian',fx:'純陽：暴擊率 +30%',w:['純陽','大日','乾元'],a:['烈日','日冕','耀陽']},
+ light:{n:'光',c:'#fff0b0',t:'arc',fx:'聖癒：回復 15% 威力並淨化負面',w:['金光','佛光','浩然'],a:['聖光','神聖','光輝']},
+ dark:{n:'暗',c:'#a274e0',t:'arc',fx:'侵蝕：敵人攻擊 -25%（2 回合）',w:['墨夜','玄冥','幽暗'],a:['暗影','深淵','黑闇']},
+ thunder:{n:'雷',full:'雷',c:'#b9a7ff',t:'sp',r:['wind','fire'],fx:'麻痺：30% 令敵人停一回合',w:['九霄神雷','紫電','天罡雷'],a:['雷鳴','閃電','雷霆']},
+ gravity:{n:'重',full:'重力',c:'#8a7f73',t:'sp',r:['earth','dark'],fx:'壓制：敵人受傷 +25%（3 回合）',w:['鎮山','萬鈞','千斤'],a:['重力','黑洞','引力']},
+ time:{n:'時',full:'時間',c:'#e0c27a',t:'sp',r:['yin','yang'],fx:'逆時：25% 立即再行動一次',w:['光陰','輪迴','逆時'],a:['時之','時停','時光']},
+ space:{n:'空',full:'空間',c:'#7fe0f0',t:'sp',r:['light','dark'],fx:'裂空：無視護盾與相剋，傷害 +15%',w:['虛空','乾坤','裂空'],a:['次元','空間','裂隙']},
+ summon:{n:'召',full:'召喚',c:'#9fe08f',t:'sp',r:['wood','light'],fx:'召靈：靈獸每回合攻擊 20% 威力（3 回合）',w:['御靈','靈獸','驅神'],a:['召喚','使魔','契約']},
+ poison:{n:'毒',full:'毒',c:'#7fd04a',t:'sp',r:['wood','yin'],fx:'蝕骨：疊 2 層毒，每層每回合 5% 威力',w:['蝕骨','五毒','腐心'],a:['劇毒','瘴氣','腐蝕']},
+ shadow:{n:'影',full:'影',c:'#6b6f9e',t:'sp',r:['dark','yin'],fx:'遁影：50% 閃避下一擊',w:['遁影','魅影','無影'],a:['影縛','影步','幻影']},
+ demon:{n:'魔',full:'惡魔',c:'#e04a6a',t:'sp',r:['dark','fire'],fx:'魔契：傷害 +45%，自損 6% 生命',w:['天魔','血魔','心魔'],a:['惡魔','魔王','煉獄']},
+ blood:{n:'血',full:'燃血',c:'#ff5a4a',t:'sp',r:['fire','yang'],fx:'燃血：耗 8% 生命頂一半消耗，傷害 +30%',w:['燃血','血煞','焚血'],a:['血祭','鮮血','狂血']},
+ life:{n:'壽',full:'長生',c:'#9ce6c0',t:'sp',r:['wood','yang'],fx:'長生：回復 35% 威力＋3 回合持續回復',w:['長生','不老','蓬萊'],a:['永生','生命','復甦']},
+ morph:{n:'變',full:'變身',c:'#e09a4a',t:'sp',r:['earth','wood'],fx:'化形：攻擊 +35%（3 回合）',w:['化形','法相','天罡變'],a:['獸化','變身','巨人']},
+ illusion:{n:'幻',full:'幻境',c:'#e08fe0',t:'sp',r:['water','light'],fx:'迷幻：40% 令敵人打自己',w:['鏡花','幻夢','蜃樓'],a:['幻術','迷霧','夢境']},
+ clone:{n:'分',full:'分身',c:'#c9c9ff',t:'sp',r:['shadow','space'],fx:'分身：額外兩段 45% 傷害',w:['分光','化身','一氣三清'],a:['分身','鏡像','複製']},
+};
+const ORDER=['wind','wood','water','fire','earth','yin','yang','light','dark','thunder','gravity','time','space','summon','poison','shadow','demon','blood','life','morph','illusion','clone'];
+const full=k=>EL[k].full||EL[k].n;
+/* 相剋：水>火>木>土>風>水；陰陽互剋；光暗互剋 */
+const BEAT={water:'fire',fire:'wood',wood:'earth',earth:'wind',wind:'water'};
+function adv(a,d){
+  if(BEAT[a]===d) return 1.5;
+  if(BEAT[d]===a) return .7;
+  if((a==='yin'&&d==='yang')||(a==='yang'&&d==='yin')||(a==='light'&&d==='dark')||(a==='dark'&&d==='light')) return 1.4;
+  return 1;
+}
+const CLASH=(a,b)=>BEAT[a]===b||BEAT[b]===a||(EL[a].t==='xian'&&EL[b].t==='xian'&&a!==b)||(EL[a].t==='arc'&&EL[b].t==='arc'&&a!==b);
+
+/* ---------- 招式形態 ---------- */
+const FORM={
+ sword:{n:'劍',d:'單體重擊',dmg:1.35,mp:1.1,w:['劍訣','劍氣','飛劍'],a:['之槍','之刃','光矛']},
+ palm:{n:'掌',d:'省氣快攻',dmg:1.0,mp:.7,w:['神掌','拳','指'],a:['衝擊','爆裂彈','飛彈']},
+ array:{n:'陣',d:'效果 ×1.6',dmg:.7,mp:1.0,fxm:1.6,w:['大陣','陣法','天羅陣'],a:['法陣','魔方陣','領域']},
+ guard:{n:'罩',d:'護盾 70%',dmg:.35,mp:.8,sh:.7,w:['護體罩','金鐘罩','罡氣'],a:['結界','護盾術','屏障']},
+ hex:{n:'咒',d:'機率 ×1.6',dmg:.55,mp:.8,chm:1.6,w:['咒印','封印','禁制'],a:['詛咒','咒文','印記']},
+ heal:{n:'訣',d:'療傷 60%',dmg:0,mp:.9,hl:.6,w:['心法','真訣','回春訣'],a:['祈禱','聖歌','治癒術']},
+};
+const REALM={xian:['練氣','築基','金丹','元嬰','化神','渡劫'],arc:['見習學徒','初階法師','中階法師','高階法師','大魔導師','賢者']};
+const SCHOOL={xian:{n:'仙門弟子',mpn:'真氣',c:'var(--gold)'},arc:{n:'魔法學院',mpn:'魔力',c:'var(--arc)'}};
+
+/* ---------- 敵人 ---------- */
+const FOES=[['山魈','狐妖','殭屍','畫皮','蛟龍','旱魃','九頭蟲','鬼將'],['史萊姆','哥布林','石像鬼','骷髏法師','狼人','吸血鬼','奇美拉','巫妖']];
+const BOSS=['心魔','雷劫化身','墮天使','九尾天狐','深淵魔龍','混沌古神','天道之影'];
+
+/* ---------- 狀態 ---------- */
+const KEY='xianmo-v1';
+let S=null,B=null,sel={els:[],form:'sword',name:'',auto:''},fz=[],curEl='fire',tab='pTower';
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function load(){try{const v=localStorage.getItem(KEY);return v?JSON.parse(v):null}catch(e){return null}}
+
+const realm=()=>Math.min(5,Math.floor((S.level-1)/3));
+const maxEl=()=>[1,2,2,3,3,3][realm()];
+const maxHp=()=>100+S.level*24;
+const maxMp=()=>50+S.level*10;
+const basePow=()=>16+S.level*5+realm()*6;
+const needExp=()=>30+S.level*25;
+const learnCost=k=>EL[k].t==='base'||EL[k].t===S.school?1:2;
+
+/* ---------- 創招 ---------- */
+function calcSkill(els,form){
+  const F=FORM[form];
+  let pow=basePow()*(1+.14*(els.length-1));
+  let mpm=1,clash=false;
+  for(let i=0;i<els.length;i++)for(let j=i+1;j<els.length;j++)if(CLASH(els[i],els[j]))clash=true;
+  if(clash){pow*=1.25;mpm=1.3}
+  const sp=els.filter(e=>EL[e].t==='sp').length; pow*=1+.08*sp;
+  const power=Math.round(pow);
+  const mp=Math.max(4,Math.round(power*.38*F.mp*mpm));
+  return {power,mp,clash};
+}
+function genName(els,form){
+  const F=FORM[form];
+  if(S.school==='xian'){
+    const pre=Math.random()<.4?pick(['九霄','太乙','玄天','紫府','混元','萬劫'])+'·':'';
+    return pre+els.map(e=>pick(EL[e].w)).join('')+pick(F.w);
+  }else{
+    const pre=Math.random()<.3?pick(['禁斷·','古代','大','深淵']):'';
+    return pre+els.map(e=>pick(EL[e].a)).join('')+pick(F.a);
+  }
+}
+function fxLines(els,form){
+  const F=FORM[form],out=[];
+  if(F.sh)out.push(`罩：獲得 ${Math.round(F.sh*100)}% 威力護盾`);
+  if(F.hl)out.push(`訣：回復 ${Math.round(F.hl*100)}% 威力生命`);
+  if(F.fxm)out.push('陣：持續效果數值 ×1.6');
+  if(F.chm)out.push('咒：觸發機率 ×1.6，負面效果多 1 回合');
+  els.forEach(e=>out.push(`${full(e)}・${EL[e].fx}`));
+  return out;
+}
+
+/* ---------- 戰鬥 ---------- */
+function newFoe(){
+  const f=S.floor,boss=f%5===0;
+  const pool=ORDER.filter(k=>f>=8||EL[k].t!=='sp');
+  const el=pick(pool);
+  const hp=Math.round((70+f*34+Math.pow(f,1.35)*6)*(boss?2.2:1));
+  const atk=Math.round((9+f*3.6)*(boss?1.3:1));
+  const name=boss?BOSS[Math.min(BOSS.length-1,Math.floor(f/5)-1)]:pick(FOES[Math.random()<.5?0:1]);
+  return {name,el,hp,max:hp,atk,boss,burn:0,poison:0,stun:0,slow:0,weak:0,expose:0,confuse:0,charge:0,turn:0};
+}
+function newBattle(keepHp){
+  const p=B&&keepHp?B.p:{hp:maxHp(),mp:maxMp()};
+  B={e:newFoe(),p:{hp:p.hp,mp:p.mp,shield:0,evade:0,atkUp:0,regen:0,summon:0,sumPow:0},over:false,log:[]};
+  addLog(`第 ${S.floor} 層：${B.e.boss?'【守關】':''}${B.e.name}（${full(B.e.el)}屬性）現身！`);
+}
+function addLog(t){B.log.unshift(t);B.log=B.log.slice(0,7)}
+function floatNum(t,color){const s=document.createElement('span');s.className='fl';s.textContent=t;s.style.color=color;s.style.left=(40+Math.random()*20)+'%';$('floats').appendChild(s);setTimeout(()=>s.remove(),1000)}
+function hitAnim(){const g=$('eGlyph');g.classList.remove('hit');void g.offsetWidth;g.classList.add('hit')}
+
+function useSkill(sk){
+  if(B.over)return;
+  const p=B.p,e=B.e,F=FORM[sk.form];
+  const hasEl=k=>sk.els.includes(k);
+  let mpCost=sk.mp;
+  if(hasEl('blood')){mpCost=Math.round(mpCost/2);const c=Math.round(maxHp()*.08);p.hp=Math.max(1,p.hp-c)}
+  if(p.mp<mpCost){toast(`${SCHOOL[S.school].mpn}不足`);return}
+  p.mp-=mpCost;
+  const fxm=F.fxm||1,chm=F.chm||1,dur=F.chm?1:0;
+  let pw=sk.power*(p.atkUp?1.35:1);
+  const msgs=[];
+  // 傷害
+  if(F.dmg>0){
+    let m=1;
+    if(hasEl('space'))m=1.15;else m=Math.max(...sk.els.map(k=>adv(k,e.el)));
+    let crit=Math.random()<(.1+(hasEl('yang')?.3*chm:0));
+    let d=pw*F.dmg*m*rnd(.9,1.1)*(e.expose?1.25:1)*(crit?1.7:1);
+    if(hasEl('demon'))d*=1.45;
+    if(hasEl('blood'))d*=1.3;
+    let hits=[d];
+    if(hasEl('wind'))hits.push(d*.4);
+    if(hasEl('clone'))hits.push(d*.45,d*.45);
+    let total=0;hits.forEach((h,i)=>{h=Math.round(h);total+=h;setTimeout(()=>floatNum((crit&&i===0?'暴擊 ':'')+h,crit&&i===0?'#ffd36b':'#ffffff'),i*140)});
+    e.hp-=total;hitAnim();
+    msgs.push(`使出【${sk.name}】造成 ${total} 傷害${m>1.05&&!hasEl('space')?'（相剋！）':''}${m<1?'（被剋）':''}${crit?'，暴擊':''}`);
+    if(hasEl('yin')){const h=Math.round(total*.3);p.hp=Math.min(maxHp(),p.hp+h);msgs.push(`吸納 ${h} 生命`)}
+  }else msgs.push(`運起【${sk.name}】`);
+  if(F.sh){p.shield+=Math.round(pw*F.sh)}
+  if(F.hl){const h=Math.round(pw*F.hl);p.hp=Math.min(maxHp(),p.hp+h);msgs.push(`療傷 ${h}`)}
+  // 屬性效果
+  sk.els.forEach(k=>{
+    switch(k){
+      case 'wood':{const h=Math.round(pw*.2);p.hp=Math.min(maxHp(),p.hp+h);break}
+      case 'water':e.slow=2+dur;break;
+      case 'fire':e.burn=Math.max(e.burn,Math.round(pw*.15*fxm));e.burnT=3+dur;break;
+      case 'earth':p.shield+=Math.round(pw*.3);break;
+      case 'light':{const h=Math.round(pw*.15);p.hp=Math.min(maxHp(),p.hp+h);break}
+      case 'dark':e.weak=2+dur;break;
+      case 'thunder':if(Math.random()<.3*chm){e.stun=1;msgs.push('敵人被麻痺！')}break;
+      case 'gravity':e.expose=3+dur;break;
+      case 'summon':p.summon=3;p.sumPow=Math.round(pw*.2*fxm);break;
+      case 'poison':e.poison+=2;e.poisonPow=Math.round(pw*.05*fxm);break;
+      case 'shadow':p.evade=1;break;
+      case 'demon':p.hp=Math.max(1,p.hp-Math.round(maxHp()*.06));break;
+      case 'life':{const h=Math.round(pw*.35);p.hp=Math.min(maxHp(),p.hp+h);p.regen=3;p.regenPow=Math.round(pw*.1*fxm);break}
+      case 'morph':p.atkUp=3+dur;break;
+      case 'illusion':if(Math.random()<.4*chm){e.confuse=1;msgs.push('敵人陷入幻境')}break;
+    }
+  });
+  addLog(msgs.join('，'));
+  if(hasEl('time')&&Math.random()<.25&&e.hp>0){addLog('⟲ 逆轉光陰，可再行動一次！');return afterPlayer(true)}
+  afterPlayer(false);
+}
+function basicAttack(){
+  if(B.over)return;
+  const d=Math.round(basePow()*.55*(B.p.atkUp?1.35:1)*rnd(.9,1.1)*(B.e.expose?1.25:1));
+  B.e.hp-=d;hitAnim();floatNum(d,'#fff');addLog(`普通攻擊造成 ${d} 傷害`);afterPlayer(false);
+}
+function meditate(){
+  if(B.over)return;
+  const m=Math.round(maxMp()*.35);B.p.mp=Math.min(maxMp(),B.p.mp+m);addLog(`調息運功，回復 ${m} ${SCHOOL[S.school].mpn}`);afterPlayer(false);
+}
+function afterPlayer(extra){
+  const e=B.e,p=B.p;
+  if(e.hp<=0)return win();
+  if(extra){render();return}
+  // 敵方持續傷害
+  let dot=0;
+  if(e.burnT>0){dot+=e.burn;e.burnT--}
+  if(e.poison>0)dot+=e.poison*(e.poisonPow||3);
+  if(p.summon>0){dot+=p.sumPow;p.summon--}
+  if(dot>0){e.hp-=dot;floatNum(dot,'#9fe08f');addLog(`持續效果造成 ${dot} 傷害`)}
+  if(e.hp<=0)return win();
+  // 敵方行動
+  e.turn++;
+  if(e.stun){e.stun=0;addLog(`${e.name} 麻痺，動彈不得`)}
+  else{
+    const strong=e.charge;e.charge=0;
+    let d=e.atk*rnd(.85,1.15)*(strong?1.8:1)*(e.weak?.75:1)*(e.slow?.8:1);
+    d=Math.round(d);
+    if(e.confuse){e.confuse=0;e.hp-=d;floatNum(d,'#e08fe0');addLog(`${e.name} 迷失幻境，自傷 ${d}`);if(e.hp<=0)return win()}
+    else if(p.evade&&Math.random()<.5){p.evade=0;addLog(`遁入影中，閃開 ${e.name} 的攻擊`)}
+    else{
+      p.evade=0;
+      let a=Math.min(p.shield,d);p.shield-=a;d-=a;p.hp-=d;
+      addLog(`${e.name}${strong?'【強招】':''}攻擊，受 ${d} 傷害${a?`（護盾擋 ${a}）`:''}`);
+    }
+    if(!e.charge&&e.turn%3===2){e.charge=1}
+  }
+  ['slow','weak','expose'].forEach(k=>{if(e[k]>0)e[k]--});
+  if(p.atkUp>0)p.atkUp--;
+  if(p.regen>0){p.hp=Math.min(maxHp(),p.hp+p.regenPow);p.regen--}
+  p.mp=Math.min(maxMp(),p.mp+Math.round(maxMp()*.08));
+  if(p.hp<=0)return lose();
+  render();
+}
+function win(){
+  B.over='win';const e=B.e;
+  const exp=Math.round((20+S.floor*9)*(e.boss?2:1));const wx=e.boss?3:1;
+  S.exp+=exp;S.wx+=wx;S.best=Math.max(S.best,S.floor);
+  let msg=`擊敗 ${e.name}！修為 +${exp}，悟性 +${wx}`;
+  let lv=false;while(S.exp>=needExp()){S.exp-=needExp();S.level++;lv=true}
+  if(lv){msg+=`；突破至 ${REALM[S.school][realm()]}（Lv ${S.level}）`;B.p.hp=maxHp();}
+  if(e.boss){const hid=ORDER.filter(k=>EL[k].t==='sp'&&!S.rev.includes(k)&&!S.owned.includes(k));if(hid.length){const k=pick(hid);S.rev.push(k);msg+=`；參透「${full(k)}」完整配方`}}
+  addLog(msg);toast(msg);save();render();
+}
+function lose(){B.over='lose';B.p.hp=0;addLog('你力竭倒下……可回到上一層再修煉。');render()}
+function nextFloor(){S.floor++;const hp=Math.min(maxHp(),B.p.hp+Math.round(maxHp()*.4));B.p.hp=hp;B.p.mp=maxMp();newBattle(true);save();render()}
+function retreat(back){if(back)S.floor=Math.max(1,S.floor-1);B=null;newBattle(false);save();render()}
+
+/* ---------- 屬性盤 ---------- */
+function learn(k){
+  const c=learnCost(k);if(S.wx<c)return toast(`悟性不足（需要 ${c}）`);
+  S.wx-=c;S.owned.push(k);toast(`修得「${full(k)}」屬性`);save();render();
+}
+function fuse(){
+  if(fz.length<2)return toast('先揀兩種已修屬性');
+  const found=ORDER.find(k=>EL[k].r&&EL[k].r.includes(fz[0])&&EL[k].r.includes(fz[1])&&fz[0]!==fz[1]);
+  if(!found||S.owned.includes(found)){toast(found?'已經領悟過':'參悟無果，換個組合試試');fz=[];return render()}
+  const cost=found==='clone'?5:3;
+  if(S.wx<cost)return toast(`悟性不足（需要 ${cost}）`);
+  S.wx-=cost;S.owned.push(found);if(!S.rev.includes(found))S.rev.push(found);fz=[];curEl=found;
+  toast(`頓悟！領悟異屬性「${full(found)}」`);save();render();
+}
+
+/* ---------- render ---------- */
+function render(){
+  if(!S)return;
+  const sch=SCHOOL[S.school];
+  $('who').innerHTML=`<span class="pill ${S.school==='arc'?'arc':''}"><b>${esc(S.name)}</b> · ${sch.n}</span>
+   <span class="pill">${REALM[S.school][realm()]} · Lv ${S.level}</span>
+   <span class="expbar" title="修為 ${S.exp}/${needExp()}"><i style="width:${S.exp/needExp()*100}%"></i></span>
+   <span class="pill">悟性 <b>${S.wx}</b></span><span class="pill">最高第 <b>${S.best}</b> 層</span>`;
+  // elements
+  $('wxLbl').textContent=`已修 ${S.owned.length}/${ORDER.length}`;
+  $('egrid').innerHTML=ORDER.map(k=>{const E=EL[k],own=S.owned.includes(k);
+    const tag=E.t==='xian'?'仙':E.t==='arc'?'魔':E.t==='sp'?'異':'';
+    return `<button class="el ${own?'own':''} ${curEl===k?'sel':''}" style="--c:${E.c}" data-k="${k}" aria-label="${full(k)}"><span class="tag">${tag}</span><span class="g">${E.n}</span><span class="s">${E.full&&E.full.length>1?E.full:own?'已修':''}</span></button>`}).join('');
+  const E=EL[curEl],own=S.owned.includes(curEl);
+  let rc='';
+  if(E.r){const known=S.rev.includes(curEl)||own;rc=`配方：${full(E.r[0])} ＋ ${known?full(E.r[1]):'？'}${curEl==='clone'?'（耗 5 悟性）':''}`}
+  else rc=E.t==='base'?'五行基礎屬性（中西共通）':E.t==='xian'?'仙門屬性':'學院屬性';
+  let act='';
+  if(!own&&!E.r){const c=learnCost(curEl);act=`<button class="btn pri" id="learnBtn" style="margin-top:6px" ${S.wx<c?'disabled':''}>修習（${c} 悟性）</button>`}
+  else if(!own)act=`<div class="hint" style="margin-top:4px">需要用參悟融合領悟</div>`;
+  $('einfo').innerHTML=`<h3><span style="color:${E.c}">${E.n}</span>${E.full&&E.full!==E.n?full(curEl):''}${own?'<span class="pill" style="font-size:11px">已修</span>':''}</h3><div>${E.fx}</div><div class="rc">${rc}</div>${act}`;
+  if($('learnBtn'))$('learnBtn').onclick=()=>learn(curEl);
+  [0,1].forEach(i=>{const s=$('fz'+i),k=fz[i];s.textContent=k?EL[k].n:'？';s.className='slot'+(k?' f':'');s.style.color=k?EL[k].c:'';s.style.borderColor=k?EL[k].c:''});
+  $('fuseBtn').disabled=fz.length<2||S.wx<3;
+  // forge
+  const me=maxEl();$('maxElLbl').textContent=`每招最多 ${me} 屬性`;
+  sel.els=sel.els.filter(k=>S.owned.includes(k)).slice(0,me);
+  $('fchips').innerHTML=S.owned.map(k=>`<button class="chip ${sel.els.includes(k)?'on':''}" style="--c:${EL[k].c}" data-k="${k}"><span class="d">${EL[k].n}</span>${full(k)}</button>`).join('');
+  $('fforms').innerHTML=Object.entries(FORM).map(([k,F])=>`<button class="form ${sel.form===k?'on':''}" data-f="${k}"><b>${F.n}</b><small>${F.d}</small></button>`).join('');
+  const pv=$('preview');
+  if(!sel.els.length){pv.className='preview empty';pv.innerHTML='揀至少一種屬性，再揀形態，就會推演出新武學。相剋屬性同爐（例如水＋火、陰＋陽）威力 +25%，但更耗氣。'}
+  else{
+    const st=calcSkill(sel.els,sel.form);
+    const key=sel.els.join('+')+'|'+sel.form;
+    if(sel.auto!==key){sel.auto=key;sel.name=genName(sel.els,sel.form)}
+    pv.className='preview';
+    pv.innerHTML=`<div class="pname"><input id="skName" maxlength="14" value="${esc(sel.name)}" aria-label="武學名稱"><button class="ibtn" id="reroll" title="換個名">↻</button></div>
+     <div class="stats"><span>威力 <b>${st.power}</b></span><span>${sch.mpn} <b>${st.mp}</b></span><span>形態 <b>${FORM[sel.form].n}</b></span>${st.clash?'<span style="color:var(--seal)">相剋相成</span>':''}</div>
+     <ul class="fx">${fxLines(sel.els,sel.form).map(l=>`<li>${l}</li>`).join('')}</ul>
+     <button class="btn pri" id="createBtn" ${S.skills.length>=12?'disabled':''}>${S.skills.length>=12?'武學庫已滿（12）':'創出武學'}</button>`;
+    $('skName').oninput=ev=>sel.name=ev.target.value;
+    $('reroll').onclick=()=>{sel.name=genName(sel.els,sel.form);render()};
+    $('createBtn').onclick=create;
+  }
+  $('libCount').textContent=`${S.skills.length}/12`;
+  $('lib').innerHTML=S.skills.map(sk=>{const eq=S.equip.includes(sk.id);
+    return `<div class="sk ${eq?'eq':''}"><div class="dots">${sk.els.map(k=>`<span class="dot" style="--c:${EL[k].c}">${EL[k].n}</span>`).join('')}</div>
+     <div class="nm">${esc(sk.name)}<small>${FORM[sk.form].n}・威力 ${sk.power}・耗 ${sk.mp}</small></div>
+     <button class="ibtn ${eq?'on':''}" data-eq="${sk.id}" aria-label="裝備">★</button>
+     <button class="ibtn ${delArm===sk.id?'warn':''}" data-del="${sk.id}" aria-label="廢除">${delArm===sk.id?'確':'✕'}</button></div>`}).join('')||'<div class="hint">未有武學。</div>';
+  // battle
+  const e=B.e,p=B.p;
+  $('floorLbl').textContent=`第 ${S.floor} 層${e.boss?' · 守關':''}`;
+  $('arena').style.setProperty('--ec',EL[e.el].c);
+  $('eName').textContent=e.name;$('eName').className='ename'+(e.boss?' boss':'');
+  $('eEl').style.setProperty('--c',EL[e.el].c);$('eEl').innerHTML=`<span class="d">${EL[e.el].n}</span>${full(e.el)}屬性`;
+  $('eGlyph').textContent=e.name[0];
+  $('eHp').style.width=clamp(e.hp/e.max*100,0,100)+'%';
+  $('eHpT').textContent=`生命 ${Math.max(0,e.hp)} / ${e.max}`;$('eAtk').textContent=`攻擊 ${e.atk}`;
+  const es=[];if(e.burnT>0)es.push('灼燒');if(e.poison)es.push(`毒 ×${e.poison}`);if(e.slow)es.push('寒滯');if(e.weak)es.push('侵蝕');if(e.expose)es.push('壓制');if(e.stun)es.push('麻痺');if(e.confuse)es.push('迷幻');
+  $('eSt').innerHTML=es.map(s=>`<span>${s}</span>`).join('');
+  $('eIntent').textContent=B.over?'':e.charge?'⚠ 蓄力中，下回合放強招（×1.8）':'';
+  $('pHp').style.width=clamp(p.hp/maxHp()*100,0,100)+'%';$('pHpT').textContent=`生命 ${Math.max(0,p.hp)} / ${maxHp()}`;
+  $('pSh').style.width=clamp(p.shield/maxHp()*100,0,100)+'%';$('pShT').textContent=p.shield?`護盾 ${p.shield}`:'';
+  $('pMp').style.width=clamp(p.mp/maxMp()*100,0,100)+'%';$('pMpT').textContent=`${sch.mpn} ${p.mp} / ${maxMp()}`;
+  const ps=[];if(p.atkUp)ps.push(`化形 ${p.atkUp}`);if(p.evade)ps.push('遁影');if(p.regen)ps.push(`長生 ${p.regen}`);if(p.summon)ps.push(`靈獸 ${p.summon}`);
+  $('pSt').innerHTML=ps.map(s=>`<span>${s}</span>`).join('');
+  const eqs=S.equip.map(id=>S.skills.find(s=>s.id===id)).filter(Boolean);
+  let ah='';for(let i=0;i<4;i++){const sk=eqs[i];
+    if(sk)ah+=`<button class="act" data-use="${sk.id}" ${B.over||p.mp<(sk.els.includes('blood')?Math.round(sk.mp/2):sk.mp)?'disabled':''}><b style="color:${EL[sk.els[0]].c}">${esc(sk.name)}</b><small>${sk.els.map(full).join('・')}・${FORM[sk.form].n}・耗 ${sk.mp}</small></button>`;
+    else ah+=`<button class="act ghost" data-goto="pForge"><b>空招位</b><small>去創招爐裝備 ★</small></button>`}
+  $('acts').innerHTML=ah;
+  if(B.over==='win')$('subacts').innerHTML=`<div class="res" style="width:100%"><button class="btn pri" id="nextBtn">登上第 ${S.floor+1} 層</button></div>`;
+  else if(B.over==='lose')$('subacts').innerHTML=`<div class="res" style="width:100%"><button class="btn pri" id="backBtn">退回第 ${Math.max(1,S.floor-1)} 層</button><button class="btn" id="againBtn">原層再戰</button></div>`;
+  else $('subacts').innerHTML=`<button class="btn" id="atkBtn">普攻</button><button class="btn" id="medBtn">調息（回 35% ${sch.mpn}）</button>`;
+  $('log').innerHTML=B.log.map(l=>`<p>${esc(l)}</p>`).join('');
+  if($('nextBtn'))$('nextBtn').onclick=nextFloor;
+  if($('backBtn'))$('backBtn').onclick=()=>retreat(true);
+  if($('againBtn'))$('againBtn').onclick=()=>retreat(false);
+  if($('atkBtn'))$('atkBtn').onclick=basicAttack;
+  if($('medBtn'))$('medBtn').onclick=meditate;
+  // tabs
+  document.querySelectorAll('main>.panel').forEach(pn=>pn.classList.toggle('show',pn.id===tab));
+  document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===tab));
+}
+let delArm=null;
+function create(){
+  const st=calcSkill(sel.els,sel.form);
+  const name=(sel.name||'').trim()||genName(sel.els,sel.form);
+  const sk={id:Date.now().toString(36),name,els:[...sel.els],form:sel.form,power:st.power,mp:st.mp};
+  S.skills.push(sk);if(S.equip.length<4)S.equip.push(sk.id);
+  sel.auto='';toast(`創出武學【${name}】${S.equip.includes(sk.id)?'，已裝備':''}`);save();render();
+}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let tt;function toast(m){const t=$('toast');t.textContent=m;t.hidden=false;clearTimeout(tt);tt=setTimeout(()=>t.hidden=true,2400)}
+
+/* ---------- events ---------- */
+$('egrid').onclick=ev=>{const b=ev.target.closest('[data-k]');if(!b)return;const k=b.dataset.k;curEl=k;
+  if(S.owned.includes(k)&&fz.length<2&&!fz.includes(k))fz.push(k);else if(fz.includes(k))fz=fz.filter(x=>x!==k);render()};
+$('fuseBtn').onclick=fuse;
+$('fchips').onclick=ev=>{const b=ev.target.closest('[data-k]');if(!b)return;const k=b.dataset.k;
+  if(sel.els.includes(k))sel.els=sel.els.filter(x=>x!==k);else{if(sel.els.length>=maxEl()){toast(`目前境界每招最多 ${maxEl()} 種屬性`);return}sel.els.push(k)}render()};
+$('fforms').onclick=ev=>{const b=ev.target.closest('[data-f]');if(!b)return;sel.form=b.dataset.f;render()};
+$('lib').onclick=ev=>{const q=ev.target.closest('[data-eq]'),d=ev.target.closest('[data-del]');
+  if(q){const id=q.dataset.eq;if(S.equip.includes(id))S.equip=S.equip.filter(x=>x!==id);else{if(S.equip.length>=4)return toast('最多裝備 4 招，先卸下一招');S.equip.push(id)}save();render()}
+  if(d){const id=d.dataset.del;if(delArm!==id){delArm=id;render();setTimeout(()=>{if(delArm===id){delArm=null;render()}},2500);return}
+    S.skills=S.skills.filter(s=>s.id!==id);S.equip=S.equip.filter(x=>x!==id);delArm=null;save();render()}};
+$('acts').onclick=ev=>{const u=ev.target.closest('[data-use]'),g=ev.target.closest('[data-goto]');
+  if(u){const sk=S.skills.find(s=>s.id===u.dataset.use);if(sk)useSkill(sk)}
+  if(g){tab=g.dataset.goto;render()}};
+$('tabs').onclick=ev=>{const b=ev.target.closest('[data-t]');if(b){tab=b.dataset.t;render()}};
+$('resetBtn').onclick=()=>showStart(true);
+
+/* ---------- 入門 ---------- */
+function showStart(isReset){
+  const m=$('modal');let path='xian',root='fire',nm='';
+  const draw=()=>{
+    const roots=ORDER.filter(k=>EL[k].t==='base'||EL[k].t===path);
+    m.innerHTML=`<div class="mbox">
+     <h1>仙魔雙修</h1>
+     <p>東方修真，西方魔導。修屬性、融異能、自創武學，登上試煉塔。</p>
+     <input class="nameIn" id="nmIn" maxlength="10" placeholder="道號／法師名" value="${esc(nm)}">
+     <div class="paths">
+       <button class="path ${path==='xian'?'on':''}" data-p="xian" style="--pc:var(--gold)"><b style="color:var(--gold)">仙門弟子</b><small>修 風木水火土・陰陽。用真氣，由練氣修到渡劫。光暗屬性要額外悟性。</small></button>
+       <button class="path ${path==='arc'?'on':''}" data-p="arc" style="--pc:var(--arc)"><b style="color:var(--arc)">魔法學院</b><small>修 風木水火土・光暗。用魔力，由學徒進階至賢者。陰陽屬性要額外悟性。</small></button>
+     </div>
+     <div class="lbl">選擇${path==='xian'?'靈根':'天賦屬性'}（起始屬性）</div>
+     <div class="chips">${roots.map(k=>`<button class="chip ${root===k?'on':''}" style="--c:${EL[k].c}" data-r="${k}"><span class="d">${EL[k].n}</span>${full(k)}</button>`).join('')}</div>
+     <p style="font-size:12px">提示：雷、時間、空間、分身等異屬性，要融合兩種屬性先領悟，部分要中西雙修。</p>
+     <div style="display:flex;gap:8px">${isReset&&S?'<button class="btn" id="cancelStart" style="flex:1">取消</button>':''}<button class="btn pri" id="goBtn" style="flex:2">${isReset&&S?'放棄修為，重新入門':'踏入山門'}</button></div>
+    </div>`;
+    $('nmIn').oninput=ev=>nm=ev.target.value;
+    m.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{path=b.dataset.p;if(!(EL[root].t==='base'||EL[root].t===path))root='fire';draw()});
+    m.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{root=b.dataset.r;draw()});
+    if($('cancelStart'))$('cancelStart').onclick=()=>m.hidden=true;
+    $('goBtn').onclick=()=>{
+      S={name:nm.trim()||(path==='xian'?'無名散修':'無名學徒'),school:path,level:1,exp:0,wx:3,floor:1,best:0,owned:[root],skills:[],equip:[],rev:[]};
+      const st=calcSkill([root],'palm');
+      const sk={id:'s0',name:genName([root],'palm'),els:[root],form:'palm',power:st.power,mp:st.mp};
+      S.skills.push(sk);S.equip.push(sk.id);curEl=root;sel={els:[root],form:'sword',name:'',auto:''};fz=[];
+      B=null;newBattle(false);save();m.hidden=true;render();
+      toast('起始送你 3 悟性：去屬性盤修習新屬性吧');
+    };
+  };
+  draw();m.hidden=false;
+}
+
+S=load();
+if(S&&S.owned){if(!S.rev)S.rev=[];newBattle(false);curEl=S.owned[0];render()}
+else{
+  // 示範畫面：背景用樣本角色，入門後換成你的
+  S={name:'示範',school:'xian',level:1,exp:0,wx:3,floor:1,best:0,owned:['fire'],skills:[],equip:[],rev:[]};
+  newBattle(false);render();S=null;showStart(false);
+}
+})();
+</script>
+
+</body>
+</html>
