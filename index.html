@@ -54,6 +54,8 @@ header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;min-width:0}
 .expbar i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),#f6dd8f);width:0;transition:width .4s}
 .hbtn{font-size:12px;color:var(--dim);border:1px solid var(--line);border-radius:6px;padding:4px 8px}
 .hbtn:hover{color:var(--paper)}
+.hbtn.on{color:var(--gold);border-color:var(--gold)}
+@media(max-width:1180px){.who .best{display:none}}
 
 /* main panels */
 /* two pages: 研法閣 (#) = 屬性盤 | 創招爐 | 雙手 ; 試煉塔 (#tower) = arena only */
@@ -230,11 +232,6 @@ main{display:grid;grid-template-columns:minmax(236px,272px) minmax(0,1fr) minmax
 .mbox{background:var(--slab);border:1px solid var(--gold);border-radius:14px;padding:20px;max-width:640px;width:100%;display:flex;flex-direction:column;gap:12px;box-sizing:border-box}
 .mbox h1{margin:0;font-family:var(--f-disp);font-size:30px;letter-spacing:.2em;text-align:center}
 .mbox p{margin:0;color:var(--dim);text-align:center;line-height:1.6}
-.paths{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.path{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--slab2);text-align:left;display:flex;flex-direction:column;gap:4px}
-.path b{font-family:var(--f-disp);font-size:20px}
-.path small{color:var(--dim);line-height:1.5}
-.path.on{border-color:var(--pc);box-shadow:0 0 0 1px var(--pc) inset}
 .nameIn{background:var(--slab2);border:1px solid var(--line);border-radius:8px;padding:8px 10px;color:var(--paper);font:inherit;font-size:16px;width:100%;box-sizing:border-box}
 
 .tabs{display:none}
@@ -261,7 +258,6 @@ main{display:grid;grid-template-columns:minmax(236px,272px) minmax(0,1fr) minmax
   .tabs button.on{border-color:var(--gold);color:var(--gold)}
   .expbar{width:70px}
   .logo{font-size:20px}
-  .paths{grid-template-columns:1fr}
 }
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -273,6 +269,7 @@ main{display:grid;grid-template-columns:minmax(236px,272px) minmax(0,1fr) minmax
     <div class="logo">仙魔雙修<small>Arcanum · Daoist</small></div>
     <nav class="views" id="views" aria-label="切換頁面"><button data-v="lab">研法閣</button><button data-v="tower">試煉塔</button></nav>
     <div class="who" id="who"></div>
+    <button class="hbtn" id="cheatBtn">秘訣</button>
     <button class="hbtn" id="resetBtn">重新入門</button>
   </header>
   <main>
@@ -402,8 +399,11 @@ const FORM={
  hex:{n:'咒',d:'機率 ×1.6',dmg:.55,mp:.8,chm:1.6,w:['咒印','封印','禁制'],a:['詛咒','咒文','印記']},
  heal:{n:'訣',d:'療傷 60%',dmg:0,mp:.9,hl:.6,w:['心法','真訣','回春訣'],a:['祈禱','聖歌','治癒術']},
 };
-const REALM={xian:['練氣','築基','金丹','元嬰','化神','渡劫'],arc:['見習學徒','初階法師','中階法師','高階法師','大魔導師','賢者']};
-const SCHOOL={xian:{n:'仙門弟子',mpn:'真氣',c:'var(--gold)'},arc:{n:'魔法學院',mpn:'魔力',c:'var(--arc)'}};
+/* 仙魔雙修：唔分門派，仙門同學院屬性一齊學 */
+const REALM=['練氣學徒','築基法師','金丹術士','元嬰大法師','化神魔導師','渡劫賢者'];
+const MPN='靈力';
+/* 天機秘訣：開咗之後悟性無限、每招 3 屬性、武學庫無上限、出招唔耗靈力、唔會倒下 */
+const CHEATS=['天機','tianji'];
 
 /* ---------- 敵人 ---------- */
 const FOES=[['山魈','狐妖','殭屍','畫皮','蛟龍','旱魃','九頭蟲','鬼將'],['史萊姆','哥布林','石像鬼','骷髏法師','狼人','吸血鬼','奇美拉','巫妖']];
@@ -417,12 +417,15 @@ function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 function load(){try{const v=localStorage.getItem(KEY);return v?JSON.parse(v):null}catch(e){return null}}
 
 const realm=()=>Math.min(5,Math.floor((S.level-1)/3));
-const maxEl=()=>[1,2,2,3,3,3][realm()];
+const maxEl=()=>S.cheat?3:[1,2,2,3,3,3][realm()];
 const maxHp=()=>100+S.level*24;
 const maxMp=()=>50+S.level*10;
 const basePow=()=>16+S.level*5+realm()*6;
 const needExp=()=>30+S.level*25;
-const learnCost=k=>EL[k].t==='base'||EL[k].t===S.school?1:2;
+const learnCost=()=>1;
+const libMax=()=>S.cheat?Infinity:12;
+const hasWx=c=>S.cheat||S.wx>=c;
+const spendWx=c=>{if(!S.cheat)S.wx-=c};
 
 /* ---------- 創招 ---------- */
 function calcSkill(els,form){
@@ -438,7 +441,8 @@ function calcSkill(els,form){
 }
 function genName(els,form){
   const F=FORM[form];
-  if(S.school==='xian'){
+  // 仙式定魔式命名，每次隨機
+  if(Math.random()<.5){
     const pre=Math.random()<.4?pick(['九霄','太乙','玄天','紫府','混元','萬劫'])+'·':'';
     return pre+els.map(e=>pick(EL[e].w)).join('')+pick(F.w);
   }else{
@@ -461,7 +465,7 @@ const HAND={L:'左手',R:'右手'};
 const getSk=id=>S.skills.find(s=>s.id===id);
 const partCost=sk=>sk.els.includes('blood')?Math.round(sk.mp/2):sk.mp;
 function genCombo(L,R,extra){
-  const a=L.els[0],b=R.els[0],xian=S.school==='xian',w=k=>pick(EL[k][xian?'w':'a']);
+  const a=L.els[0],b=R.els[0],xian=Math.random()<.5,w=k=>pick(EL[k][xian?'w':'a']);
   const head=extra?w(extra):a===b?w(a):w(a)+(xian?'':'×')+w(b);
   return xian?head+'·'+pick(['兩儀合璧','左右互搏','雙龍出海','陰陽交泰','乾坤一擲']):head+'・'+pick(['雙重詠唱','複合魔法','雙極共鳴','融合術式']);
 }
@@ -500,8 +504,8 @@ function hitAnim(){const g=$('eGlyph');g.classList.remove('hit');void g.offsetWi
 function cast(parts,co){
   if(B.over)return;
   const p=B.p;
-  const cost=co?co.mp:partCost(parts[0]);
-  if(p.mp<cost){toast(`${SCHOOL[S.school].mpn}不足`);return}
+  const cost=S.cheat?0:co?co.mp:partCost(parts[0]);
+  if(p.mp<cost){toast(`${MPN}不足`);return}
   p.mp-=cost;
   parts.forEach(sk=>{if(sk.els.includes('blood'))p.hp=Math.max(1,p.hp-Math.round(maxHp()*.08))});
   const msgs=[];
@@ -566,7 +570,7 @@ function basicAttack(){
 }
 function meditate(){
   if(B.over)return;
-  const m=Math.round(maxMp()*.35);B.p.mp=Math.min(maxMp(),B.p.mp+m);addLog(`調息運功，回復 ${m} ${SCHOOL[S.school].mpn}`);afterPlayer(false);
+  const m=Math.round(maxMp()*.35);B.p.mp=Math.min(maxMp(),B.p.mp+m);addLog(`調息運功，回復 ${m} ${MPN}`);afterPlayer(false);
 }
 function afterPlayer(extra){
   const e=B.e,p=B.p;
@@ -599,7 +603,10 @@ function afterPlayer(extra){
   if(p.atkUp>0)p.atkUp--;
   if(p.regen>0){p.hp=Math.min(maxHp(),p.hp+p.regenPow);p.regen--}
   p.mp=Math.min(maxMp(),p.mp+Math.round(maxMp()*.08));
-  if(p.hp<=0)return lose();
+  if(p.hp<=0){
+    if(!S.cheat)return lose();
+    p.hp=maxHp();addLog('天機護體，生命回滿');
+  }
   render();
 }
 function win(){
@@ -608,7 +615,7 @@ function win(){
   S.exp+=exp;S.wx+=wx;S.best=Math.max(S.best,S.floor);
   let msg=`擊敗 ${e.name}！修為 +${exp}，悟性 +${wx}`;
   let lv=false;while(S.exp>=needExp()){S.exp-=needExp();S.level++;lv=true}
-  if(lv){msg+=`；突破至 ${REALM[S.school][realm()]}（Lv ${S.level}）`;B.p.hp=maxHp();}
+  if(lv){msg+=`；突破至 ${REALM[realm()]}（Lv ${S.level}）`;B.p.hp=maxHp();}
   if(e.boss){const hid=ORDER.filter(k=>EL[k].t==='sp'&&!S.rev.includes(k)&&!S.owned.includes(k));if(hid.length){const k=pick(hid);S.rev.push(k);msg+=`；參透「${full(k)}」完整配方`}}
   addLog(msg);toast(msg);save();render();
 }
@@ -618,28 +625,28 @@ function retreat(back){if(back)S.floor=Math.max(1,S.floor-1);B=null;newBattle(fa
 
 /* ---------- 屬性盤 ---------- */
 function learn(k){
-  const c=learnCost(k);if(S.wx<c)return toast(`悟性不足（需要 ${c}）`);
-  S.wx-=c;S.owned.push(k);toast(`修得「${full(k)}」屬性`);save();render();
+  const c=learnCost(k);if(!hasWx(c))return toast(`悟性不足（需要 ${c}）`);
+  spendWx(c);S.owned.push(k);toast(`修得「${full(k)}」屬性`);save();render();
 }
 function fuse(){
   if(fz.length<2)return toast('先揀兩種已修屬性');
   const found=ORDER.find(k=>EL[k].r&&EL[k].r.includes(fz[0])&&EL[k].r.includes(fz[1])&&fz[0]!==fz[1]);
   if(!found||S.owned.includes(found)){toast(found?'已經領悟過':'參悟無果，換個組合試試');fz=[];return render()}
   const cost=found==='clone'?5:3;
-  if(S.wx<cost)return toast(`悟性不足（需要 ${cost}）`);
+  if(!hasWx(cost))return toast(`悟性不足（需要 ${cost}）`);
   const [a,b]=fz;
-  S.wx-=cost;S.owned.push(found);if(!S.rev.includes(found))S.rev.push(found);fz=[];curEl=found;
+  spendWx(cost);S.owned.push(found);if(!S.rev.includes(found))S.rev.push(found);fz=[];curEl=found;
   save();render();showFuse(found,a,b);
 }
 
 /* ---------- render ---------- */
 function render(){
   if(!S)return;
-  const sch=SCHOOL[S.school];
-  $('who').innerHTML=`<span class="pill ${S.school==='arc'?'arc':''}"><b>${esc(S.name)}</b> · ${sch.n}</span>
-   <span class="pill">${REALM[S.school][realm()]} · Lv ${S.level}</span>
+  $('who').innerHTML=`<span class="pill"><b>${esc(S.name)}</b> · 仙魔雙修</span>
+   <span class="pill">${REALM[realm()]} · Lv ${S.level}</span>
    <span class="expbar" title="修為 ${S.exp}/${needExp()}"><i style="width:${S.exp/needExp()*100}%"></i></span>
-   <span class="pill">悟性 <b>${S.wx}</b></span><span class="pill best">最高第 <b>${S.best}</b> 層</span>`;
+   <span class="pill">悟性 <b>${S.cheat?'∞':S.wx}</b></span><span class="pill best">最高第 <b>${S.best}</b> 層</span>`;
+  $('cheatBtn').textContent=S.cheat?'天機 ∞':'秘訣';$('cheatBtn').classList.toggle('on',!!S.cheat);
   // elements
   $('wxLbl').textContent=`已修 ${S.owned.length}/${ORDER.length}`;
   $('egrid').innerHTML=ORDER.map(k=>{const E=EL[k],own=S.owned.includes(k);
@@ -648,14 +655,14 @@ function render(){
   const E=EL[curEl],own=S.owned.includes(curEl);
   let rc='';
   if(E.r){const known=S.rev.includes(curEl)||own;rc=`配方：${full(E.r[0])} ＋ ${known?full(E.r[1]):'？'}${curEl==='clone'?'（耗 5 悟性）':''}`}
-  else rc=E.t==='base'?'五行基礎屬性（中西共通）':E.t==='xian'?'仙門屬性':'學院屬性';
+  else rc=E.t==='base'?'五行基礎屬性':E.t==='xian'?'仙門屬性（東方）':'學院屬性（西方）';
   let act='';
-  if(!own&&!E.r){const c=learnCost(curEl);act=`<button class="btn pri" id="learnBtn" style="margin-top:6px" ${S.wx<c?'disabled':''}>修習（${c} 悟性）</button>`}
+  if(!own&&!E.r){const c=learnCost(curEl);act=`<button class="btn pri" id="learnBtn" style="margin-top:6px" ${hasWx(c)?'':'disabled'}>修習（${S.cheat?'天機':c+' 悟性'}）</button>`}
   else if(!own)act=`<div class="hint" style="margin-top:4px">需要用參悟融合領悟</div>`;
   $('einfo').innerHTML=`<h3><span style="color:${E.c}">${E.n}</span>${E.full&&E.full!==E.n?full(curEl):''}${own?'<span class="pill" style="font-size:11px">已修</span>':''}</h3><div>${E.fx}</div><div class="rc">${rc}</div>${act}`;
   if($('learnBtn'))$('learnBtn').onclick=()=>learn(curEl);
   [0,1].forEach(i=>{const s=$('fz'+i),k=fz[i];s.textContent=k?EL[k].n:'？';s.className='slot'+(k?' f':'');s.style.color=k?EL[k].c:'';s.style.borderColor=k?EL[k].c:''});
-  $('fuseBtn').disabled=fz.length<2||S.wx<3;
+  $('fuseBtn').disabled=fz.length<2||!hasWx(3);
   // forge
   const me=maxEl();$('maxElLbl').textContent=`每招最多 ${me} 屬性`;
   sel.els=sel.els.filter(k=>S.owned.includes(k)).slice(0,me);
@@ -669,9 +676,9 @@ function render(){
     if(sel.auto!==key){sel.auto=key;sel.name=genName(sel.els,sel.form)}
     pv.className='preview';
     pv.innerHTML=`<div class="pname"><input id="skName" maxlength="14" value="${esc(sel.name)}" aria-label="武學名稱"><button class="ibtn" id="reroll" title="換個名">↻</button></div>
-     <div class="stats"><span>威力 <b>${st.power}</b></span><span>${sch.mpn} <b>${st.mp}</b></span><span>形態 <b>${FORM[sel.form].n}</b></span>${st.clash?'<span style="color:var(--seal)">相剋相成</span>':''}</div>
+     <div class="stats"><span>威力 <b>${st.power}</b></span><span>${MPN} <b>${st.mp}</b></span><span>形態 <b>${FORM[sel.form].n}</b></span>${st.clash?'<span style="color:var(--seal)">相剋相成</span>':''}</div>
      <ul class="fx">${fxLines(sel.els,sel.form).map(l=>`<li>${l}</li>`).join('')}</ul>
-     <button class="btn pri" id="createBtn" ${S.skills.length>=12?'disabled':''}>${S.skills.length>=12?'武學庫已滿（12）':'創出武學'}</button>`;
+     <button class="btn pri" id="createBtn" ${S.skills.length>=libMax()?'disabled':''}>${S.skills.length>=libMax()?'武學庫已滿（12）':'創出武學'}</button>`;
     $('skName').oninput=ev=>sel.name=ev.target.value;
     $('reroll').onclick=()=>{sel.name=genName(sel.els,sel.form);render()};
     $('createBtn').onclick=create;
@@ -687,13 +694,13 @@ function render(){
     cb.className='preview';
     cb.innerHTML=`<div class="lbl">雙手合擊</div>
      <div class="pname"><b class="cname">${esc(co.name)}</b><button class="ibtn" id="coRe" title="換個名">↻</button></div>
-     <div class="stats"><span style="color:var(--gold)">${co.tag}</span><span>威力 <b>×${co.mult}</b></span><span>${sch.mpn} <b>${co.mp}</b></span></div>
+     <div class="stats"><span style="color:var(--gold)">${co.tag}</span><span>威力 <b>×${co.mult}</b></span><span>${MPN} <b>${co.mp}</b></span></div>
      <ul class="fx"><li>左手【${esc(co.L.name)}】＋右手【${esc(co.R.name)}】同一回合齊出</li>${co.extra?`<li>化生${full(co.extra)}・${EL[co.extra].fx}</li>`:''}</ul>
      <button class="btn pri" id="coShow">演示合擊</button>`;
     $('coRe').onclick=()=>{S.combos[co.key]=genCombo(co.L,co.R,co.extra);save();render()};
     $('coShow').onclick=()=>showCombo(comboInfo());
   }
-  $('libCount').textContent=`${S.skills.length}/12`;
+  $('libCount').textContent=S.cheat?`${S.skills.length}/∞`:`${S.skills.length}/12`;
   $('lib').innerHTML=S.skills.map(sk=>{const inL=S.hands.L===sk.id,inR=S.hands.R===sk.id;
     return `<div class="sk ${inL||inR?'eq':''}">${dots(sk)}
      <button class="nm" data-show="${sk.id}" title="武學展示">${esc(sk.name)}<small>${FORM[sk.form].n}・威力 ${sk.power}・耗 ${partCost(sk)}</small></button>
@@ -714,7 +721,7 @@ function render(){
   $('eIntent').textContent=B.over?'':e.charge?'⚠ 蓄力中，下回合放強招（×1.8）':'';
   $('pHp').style.width=clamp(p.hp/maxHp()*100,0,100)+'%';$('pHpT').textContent=`生命 ${Math.max(0,p.hp)} / ${maxHp()}`;
   $('pSh').style.width=clamp(p.shield/maxHp()*100,0,100)+'%';$('pShT').textContent=p.shield?`護盾 ${p.shield}`:'';
-  $('pMp').style.width=clamp(p.mp/maxMp()*100,0,100)+'%';$('pMpT').textContent=`${sch.mpn} ${p.mp} / ${maxMp()}`;
+  $('pMp').style.width=clamp(p.mp/maxMp()*100,0,100)+'%';$('pMpT').textContent=`${MPN} ${p.mp} / ${maxMp()}`;
   const ps=[];if(p.atkUp)ps.push(`化形 ${p.atkUp}`);if(p.evade)ps.push('遁影');if(p.regen)ps.push(`長生 ${p.regen}`);if(p.summon)ps.push(`靈獸 ${p.summon}`);
   $('pSt').innerHTML=ps.map(s=>`<span>${s}</span>`).join('');
   let ah='';['L','R'].forEach(h=>{const sk=getSk(S.hands[h]);
@@ -725,7 +732,7 @@ function render(){
   $('acts').innerHTML=ah;
   if(B.over==='win')$('subacts').innerHTML=`<div class="res" style="width:100%"><button class="btn pri" id="nextBtn">登上第 ${S.floor+1} 層</button></div>`;
   else if(B.over==='lose')$('subacts').innerHTML=`<div class="res" style="width:100%"><button class="btn pri" id="backBtn">退回第 ${Math.max(1,S.floor-1)} 層</button><button class="btn" id="againBtn">原層再戰</button></div>`;
-  else $('subacts').innerHTML=`<button class="btn" id="atkBtn">普攻</button><button class="btn" id="medBtn">調息（回 35% ${sch.mpn}）</button>`;
+  else $('subacts').innerHTML=`<button class="btn" id="atkBtn">普攻</button><button class="btn" id="medBtn">調息（回 35% ${MPN}）</button>`;
   $('log').innerHTML=B.log.map(l=>`<p>${esc(l)}</p>`).join('');
   if($('nextBtn'))$('nextBtn').onclick=nextFloor;
   if($('backBtn'))$('backBtn').onclick=()=>retreat(true);
@@ -791,7 +798,7 @@ function showSkill(sk,h,then){
   showcase({label:`武學展示 · ${F.n}・${F.d}${h?` · 已放${HAND[h]}`:''}`,name:sk.name,color:c,
     left:{g:sk.els.map(k=>EL[k].n).join(''),c},right:{g:F.n,c:'var(--gold)'},center:{g:F.n,c},
     orbit:sk.els.map(k=>({g:EL[k].n,c:EL[k].c})),
-    stats:`<span>威力 <b>${sk.power}</b></span><span>${SCHOOL[S.school].mpn} <b>${sk.mp}</b></span>`,
+    stats:`<span>威力 <b>${sk.power}</b></span><span>${MPN} <b>${sk.mp}</b></span>`,
     fx:fxLines(sk.els,sk.form),go:then?null:tryTower,then});
 }
 function showFuse(k,a,b){
@@ -835,31 +842,54 @@ $('views').onclick=ev=>{const b=ev.target.closest('[data-v]');if(b)location.hash
 window.addEventListener('hashchange',()=>{view=location.hash==='#tower'?'tower':'lab';document.body.className='v-'+view;render()});
 document.addEventListener('keydown',ev=>{if(ev.key==='Escape'&&scClose)scClose()});
 $('resetBtn').onclick=()=>showStart(true);
+$('cheatBtn').onclick=()=>showCheat();
+
+/* ---------- 天機秘訣 ---------- */
+function showCheat(){
+  const m=$('modal');
+  const close=()=>{m.hidden=true;m.onclick=null;scClose=null};
+  m.innerHTML=S.cheat?`<div class="mbox" style="max-width:380px">
+     <h1 style="font-size:24px">天機 ∞</h1>
+     <p>悟性無限、每招 3 種屬性、武學庫無上限、出招唔耗${MPN}、唔會倒下。</p>
+     <div style="display:flex;gap:8px"><button class="btn" id="ckClose" style="flex:1">繼續</button><button class="btn pri" id="ckOff" style="flex:1">關閉天機</button></div>
+    </div>`:`<div class="mbox" style="max-width:380px">
+     <h1 style="font-size:24px">秘訣</h1>
+     <p>輸入秘訣，開啟無限試煉。</p>
+     <input class="nameIn" id="ckIn" maxlength="20" placeholder="秘訣" autocomplete="off">
+     <div style="display:flex;gap:8px"><button class="btn" id="ckClose" style="flex:1">取消</button><button class="btn pri" id="ckGo" style="flex:1">確認</button></div>
+    </div>`;
+  $('ckClose').onclick=close;
+  if($('ckOff'))$('ckOff').onclick=()=>{S.cheat=false;save();close();render();toast('天機已關，返回正常修煉')};
+  if($('ckGo')){
+    const go=()=>{
+      if(!CHEATS.includes($('ckIn').value.trim().toLowerCase())){toast('秘訣唔啱');$('ckIn').select();return}
+      S.cheat=true;save();close();render();toast('天機已開：悟性無限，任你試');
+    };
+    $('ckGo').onclick=go;$('ckIn').onkeydown=ev=>{if(ev.key==='Enter')go()};
+  }
+  scClose=close;m.onclick=ev=>{if(ev.target===m)close()};
+  m.hidden=false;($('ckIn')||$('ckClose')).focus();
+}
 
 /* ---------- 入門 ---------- */
 function showStart(isReset){
-  const m=$('modal');let path='xian',root='fire',nm='';m.onclick=null;scClose=null;
+  const m=$('modal');let root='fire',nm='';m.onclick=null;scClose=null;
   const draw=()=>{
-    const roots=ORDER.filter(k=>EL[k].t==='base'||EL[k].t===path);
+    const roots=ORDER.filter(k=>EL[k].t!=='sp');
     m.innerHTML=`<div class="mbox">
      <h1>仙魔雙修</h1>
-     <p>東方修真，西方魔導。修屬性、融異能、自創武學，登上試煉塔。</p>
+     <p>東方修真，西方魔導，一齊學、唔分家。修屬性、融異能、自創武學，登上試煉塔。</p>
      <input class="nameIn" id="nmIn" maxlength="10" placeholder="道號／法師名" value="${esc(nm)}">
-     <div class="paths">
-       <button class="path ${path==='xian'?'on':''}" data-p="xian" style="--pc:var(--gold)"><b style="color:var(--gold)">仙門弟子</b><small>修 風木水火土・陰陽。用真氣，由練氣修到渡劫。光暗屬性要額外悟性。</small></button>
-       <button class="path ${path==='arc'?'on':''}" data-p="arc" style="--pc:var(--arc)"><b style="color:var(--arc)">魔法學院</b><small>修 風木水火土・光暗。用魔力，由學徒進階至賢者。陰陽屬性要額外悟性。</small></button>
-     </div>
-     <div class="lbl">選擇${path==='xian'?'靈根':'天賦屬性'}（起始屬性）</div>
+     <div class="lbl">選擇靈根（起始屬性）</div>
      <div class="chips">${roots.map(k=>`<button class="chip ${root===k?'on':''}" style="--c:${EL[k].c}" data-r="${k}"><span class="d">${EL[k].n}</span>${full(k)}</button>`).join('')}</div>
-     <p style="font-size:12px">提示：雷、時間、空間、分身等異屬性，要融合兩種屬性先領悟，部分要中西雙修。</p>
+     <p style="font-size:12px">五行、陰陽（仙門）、光暗（學院）全部都可以修，每種 1 悟性。雷、時間、空間、分身等異屬性，要融合兩種屬性先領悟。</p>
      <div style="display:flex;gap:8px">${isReset&&S?'<button class="btn" id="cancelStart" style="flex:1">取消</button>':''}<button class="btn pri" id="goBtn" style="flex:2">${isReset&&S?'放棄修為，重新入門':'踏入山門'}</button></div>
     </div>`;
     $('nmIn').oninput=ev=>nm=ev.target.value;
-    m.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{path=b.dataset.p;if(!(EL[root].t==='base'||EL[root].t===path))root='fire';draw()});
     m.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{root=b.dataset.r;draw()});
     if($('cancelStart'))$('cancelStart').onclick=()=>m.hidden=true;
     $('goBtn').onclick=()=>{
-      S={name:nm.trim()||(path==='xian'?'無名散修':'無名學徒'),school:path,level:1,exp:0,wx:3,floor:1,best:0,owned:[root],skills:[],hands:{L:'s0',R:null},combos:{},rev:[]};
+      S={name:nm.trim()||'無名散修',level:1,exp:0,wx:3,floor:1,best:0,owned:[root],skills:[],hands:{L:'s0',R:null},combos:{},rev:[]};
       const st=calcSkill([root],'palm');
       const sk={id:'s0',name:genName([root],'palm'),els:[root],form:'palm',power:st.power,mp:st.mp};
       S.skills.push(sk);curEl=root;sel={els:[root],form:'sword',name:'',auto:''};fz=[];tab='pForge';
@@ -876,10 +906,11 @@ if(S&&S.owned){
   // 舊存檔：4 個裝備位 → 頭兩招放左右手
   if(!S.hands){const q=S.equip||[];S.hands={L:q[0]||null,R:q[1]||null};delete S.equip}
   if(!S.combos)S.combos={};
+  delete S.school; // 門派已合併
   newBattle(false);curEl=S.owned[0];render()}
 else{
   // 示範畫面：背景用樣本角色，入門後換成你的
-  S={name:'示範',school:'xian',level:1,exp:0,wx:3,floor:1,best:0,owned:['fire'],skills:[],hands:{L:null,R:null},combos:{},rev:[]};
+  S={name:'示範',level:1,exp:0,wx:3,floor:1,best:0,owned:['fire'],skills:[],hands:{L:null,R:null},combos:{},rev:[]};
   newBattle(false);render();S=null;showStart(false);
 }
 })();
