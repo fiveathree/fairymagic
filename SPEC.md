@@ -189,7 +189,8 @@
 - 字體：LXGW WenKai TC（中文）、Cinzel（英文副標），Google Fonts。
 - 每個屬性有專屬顏色，屬性格／招式點／敵人光暈都用該色。
 - Favicon：SVG 太極 ＋ 星芒，內嵌 data URI。
-- 分享圖：`og.png`。**部署後要將 `og:image` 改成完整網址**。
+- 分享圖：`og.png`，`og:image` 用完整網址 `https://fiveathree.github.io/fairymagic/og.png`。
+- 部署：GitHub Pages，https://fiveathree.github.io/fairymagic/
 
 ---
 
@@ -203,7 +204,6 @@
 
 ## 8. 未做／可擴展
 
-- 部署網址同 `og:image` 絕對路徑。
 - 音效、出招動畫（而家只有傷害數字飄字同受擊震動）。
 - 招式隨升級自動成長，或「重鑄」功能。
 - 裝備／法寶、丹藥（可接駁九轉丹房）。
